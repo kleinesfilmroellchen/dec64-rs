@@ -1,53 +1,39 @@
 //! Implementation of traits from `std::ops`.
 
-use std::ops::{
-    Add,
-    Neg,
-    Sub,
-};
+use std::ops::{Add, Neg, Sub};
 
-use super::{
-    Dec64,
-    COEFFICIENT_MASK,
-    NAN,
-    ZERO,
-};
+use super::{COEFFICIENT_MASK, Dec64, NAN, ZERO};
 
 impl Add for Dec64 {
     type Output = Dec64;
 
     fn add(self, other: Dec64) -> Dec64 {
-        let _sum_overflown = if self.exponent() == 0 && other.exponent() == 0 {
+        if self.is_nan() || other.is_nan() {
+            return NAN;
+        }
+
+        if self.exponent() == 0 && other.exponent() == 0 {
             // If the two exponents are both zero (which is usually the case for integers)
             // we can take the fast path. Since the exponents are both zero, we can simply
             // add the numbers together and check for overflow.
-            let (sum, overflow) = self.value.overflowing_add(other.value);
+            let (sum, overflow) = self.0.overflowing_add(other.0);
             if !overflow {
-                return dec64_raw!(sum);
+                return Dec64::from_raw(sum);
             }
-
-            sum
         } else {
             // The slow path is taken if the two operands do not both have zero exponents.
-            if self.is_nan() {
-                // If the first operand is NaN return NaN.
-                return NAN;
-            } else if self.exponent() == other.exponent() {
+            if self.exponent() == other.exponent() {
                 // The exponents match so we may add now. Zero out the exponents so there
                 // will be no carry into the coefficients when the coefficients are added.
                 // If the result is zero, then return the normal zero.
-                let (sum, overflow) = (self.value & COEFFICIENT_MASK).overflowing_add(other.value & COEFFICIENT_MASK);
+                let (sum, overflow) =
+                    (self.0 & COEFFICIENT_MASK).overflowing_add(other.0 & COEFFICIENT_MASK);
                 if !overflow {
-                    return dec64_parts!(sum >> 8, self.exponent());
+                    return Dec64::from_parts(sum >> 8, self.exponent());
                 }
-
-                sum
             } else {
                 // The slower path is taken when neither operand is nan, and their
                 // exponents are different.
-                if other.is_nan() {
-                    return NAN;
-                }
 
                 // Before addition can take place, the exponents
                 // must be made to match.
@@ -62,11 +48,11 @@ impl Add for Dec64 {
                 if lo_coefficient == 0 {
                     return hi;
                 }
-                let mut lo_exponent    = lo.exponent();
+                let mut lo_exponent = lo.exponent();
                 let mut hi_coefficient = hi.coefficient();
-                let mut hi_exponent    = hi.exponent();
+                let mut hi_exponent = hi.exponent();
 
-                // First we will try to decrease the first exponent. When we decrease the exponent
+                // First we will try to decrease the high exponent. When we decrease the exponent
                 // by 1, we must also multiply the coefficient by 10. We can do this as long as
                 // there is no overflow. We have 8 extra bits to work with, so we can do this
                 // at least twice, possibly more.
@@ -105,7 +91,7 @@ impl Add for Dec64 {
                     }
                 }
             }
-        };
+        }
 
         // Sum had an overflow.
         // This path happens only when both exponents are the same.
@@ -143,11 +129,11 @@ impl Neg for Dec64 {
         }
 
         // Result of this operation is the exponent and complemented coefficient.
-        let neg = COEFFICIENT_MASK ^ self.value;
+        let neg = COEFFICIENT_MASK ^ self.0;
         // Perform coefficient U2 complement.
         match neg.overflowing_add(1 << 8) {
             // Pass the result.
-            (ret, false) => dec64_raw!(ret),
+            (ret, false) => Dec64::from_raw(ret),
             // The coefficient is -36028797018963968, aka. MIN_COEFFICIENT which is the only
             // coefficient that cannot be trivially negated. So we do this the hard way.
             (_, true) => Self::pack(-self.coefficient(), self.exponent() as i32),

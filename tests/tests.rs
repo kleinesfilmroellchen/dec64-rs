@@ -1,5 +1,3 @@
-extern crate dec64;
-
 use dec64::Dec64;
 
 #[test]
@@ -205,7 +203,6 @@ fn compose_nan() {
     assert!(nan_subnormal != nan_normal);
 }
 
-
 #[test]
 fn compose_zero() {
     let zero_normal = Dec64::from_parts(0, 0);
@@ -219,7 +216,6 @@ fn compose_zero() {
     assert_eq!(zero_high, dec64::ZERO);
     assert_eq!(zero_low, dec64::ZERO);
 }
-
 
 #[test]
 fn write_42() {
@@ -246,7 +242,6 @@ fn write_pi() {
 
     assert_eq!(string, "3.141592653589793");
 }
-
 
 #[test]
 fn write_pi_from_float() {
@@ -299,7 +294,6 @@ fn write_tiny() {
 
     assert_eq!(string, "1.23456e-30");
 }
-
 
 #[test]
 fn write_huge() {

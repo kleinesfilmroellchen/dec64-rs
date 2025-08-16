@@ -1,7 +1,11 @@
 [package]
 name = "dec64"
-version = "0.1.0"
-authors = ["Maciej Hirsz <maciej.hirsz@gmail.com>"]
-description = "DEC64 implementation in Rust"
-repository = "https://github.com/maciejhirsz/DEC64"
+version = "0.2.0"
+edition = "2024"
+authors = [
+	"kleines Filmröllchen <kleines@filmroellchen.eu>",
+	"Maciej Hirsz <maciej.hirsz@gmail.com>",
+]
+description = "DEC64 number type"
+repository = "https://github.com/kleinesfilmroellchen/dec64-rs"
 license = "MIT"
