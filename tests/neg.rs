@@ -1,20 +1,7 @@
-use dec64::Dec64;
-use dec64::NAN;
-use dec64::ZERO;
-use dec64::consts::PI;
-use dec64::more_consts::NAN_NAN;
-use dec64::more_consts::NEG_PI;
-use dec64::more_consts::NEG_TENTH;
-use dec64::more_consts::TENTH;
-use dec64::more_consts::ZIP;
-use dec64::more_consts::normal::MAXINT;
-use dec64::more_consts::normal::MININT;
-use dec64::more_consts::normal::NEG_ONE;
-use dec64::more_consts::normal::NEG_TEN;
-use dec64::more_consts::normal::NEG_TWO;
-use dec64::more_consts::normal::ONE;
-use dec64::more_consts::normal::TEN;
-use dec64::more_consts::normal::TWO;
+#![allow(clippy::wildcard_imports)]
+
+use dec64::consts::*;
+use dec64::*;
 
 #[test]
 fn neg_zero() {
@@ -60,24 +47,24 @@ fn neg_neg_tenth() {
 
 #[test]
 fn neg_max() {
-    let expect = Dec64::from_parts(-dec64::MAX_COEFFICIENT, dec64::MAX_EXP as i8);
-    assert_eq!(-dec64::MAX, expect);
+    let expect = Dec64::from_parts(-MAX_COEFFICIENT, MAX_EXP as i8);
+    assert_eq!(-MAX, expect);
 }
 
 #[test]
 fn neg_min() {
-    assert_eq!(-dec64::MIN, NAN);
+    assert_eq!(-MIN, NAN);
 }
 
 #[test]
 fn neg_maxint() {
-    let expect = Dec64::from_parts(-dec64::MAX_COEFFICIENT, 0);
+    let expect = Dec64::from_parts(-MAX_COEFFICIENT, 0);
     assert_eq!(-MAXINT, expect);
 }
 
 #[test]
 fn neg_minint() {
     // this will round up since last digit of MIN_COEFFICIENT is 6
-    let expect = Dec64::from_parts(-dec64::MIN_COEFFICIENT / 10 + 1, 1);
+    let expect = Dec64::from_parts(-MIN_COEFFICIENT / 10 + 1, 1);
     assert_eq!(-MININT, expect);
 }

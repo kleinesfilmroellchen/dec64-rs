@@ -1,7 +1,7 @@
-use dec64::Dec64;
-use dec64::NAN;
-use dec64::ZERO;
-use dec64::more_consts::normal::ONE;
+#![allow(clippy::wildcard_imports)]
+
+use dec64::consts::*;
+use dec64::*;
 
 #[test]
 fn roundtrip_usize() {
@@ -176,23 +176,23 @@ fn compose_f32_pi() {
 
 #[test]
 fn compose_max() {
-    let dec = Dec64::from_parts(dec64::MAX_COEFFICIENT, 127);
+    let dec = Dec64::from_parts(MAX_COEFFICIENT, 127);
 
-    assert_eq!(dec, dec64::MAX);
+    assert_eq!(dec, MAX);
 }
 
 #[test]
 fn compose_min() {
-    let dec = Dec64::from_parts(dec64::MIN_COEFFICIENT, 127);
+    let dec = Dec64::from_parts(MIN_COEFFICIENT, 127);
 
-    assert_eq!(dec, dec64::MIN);
+    assert_eq!(dec, MIN);
 }
 
 #[test]
 fn compose_min_positive() {
     let dec = Dec64::from_parts(1, -127);
 
-    assert_eq!(dec, dec64::MIN_POSITIVE);
+    assert_eq!(dec, MIN_POSITIVE);
 }
 
 #[test]
@@ -202,7 +202,7 @@ fn compose_nan() {
 
     assert!(nan_normal.is_nan());
     assert!(nan_subnormal.is_nan());
-    assert_eq!(nan_normal, dec64::NAN);
+    assert_eq!(nan_normal, NAN);
     assert!(nan_subnormal != nan_normal);
 }
 
@@ -215,9 +215,9 @@ fn compose_zero() {
     assert!(zero_normal.is_zero());
     assert!(zero_high.is_zero());
     assert!(zero_low.is_zero());
-    assert_eq!(zero_normal, dec64::ZERO);
-    assert_eq!(zero_high, dec64::ZERO);
-    assert_eq!(zero_low, dec64::ZERO);
+    assert_eq!(zero_normal, ZERO);
+    assert_eq!(zero_high, ZERO);
+    assert_eq!(zero_low, ZERO);
 }
 
 #[test]

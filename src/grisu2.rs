@@ -89,7 +89,9 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (u64, i1
             let pow10 = POW10[kappa as usize] as u64;
             buffer /= pow10;
 
-            grisu_round(&mut buffer, delta, tmp, pow10 << -one.e, wp_w.f);
+            unsafe {
+                grisu_round(&mut buffer, delta, tmp, pow10 << -one.e, wp_w.f);
+            }
             return (buffer, k);
         }
     }

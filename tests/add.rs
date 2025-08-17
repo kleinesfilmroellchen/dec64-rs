@@ -1,16 +1,7 @@
-use dec64::Dec64;
-use dec64::NAN;
-use dec64::ZERO;
-use dec64::more_consts::NAN_NAN;
-use dec64::more_consts::NEG_FIFTH;
-use dec64::more_consts::NEG_TENTH;
-use dec64::more_consts::ZIP;
-use dec64::more_consts::normal::NEG_EIGHT;
-use dec64::more_consts::normal::NEG_FOUR;
-use dec64::more_consts::normal::NEG_ONE;
-use dec64::more_consts::normal::NEG_TWO;
-use dec64::more_consts::normal::ONE;
-use dec64::more_consts::normal::TWO;
+#![allow(clippy::wildcard_imports)]
+
+use dec64::consts::*;
+use dec64::*;
 
 #[test]
 fn add_zero() {
@@ -19,11 +10,11 @@ fn add_zero() {
     assert_eq!(ZERO + ONE, ONE);
     assert_eq!(ONE + ZERO, ONE);
 
-    assert_eq!(ZERO + dec64::MAX, dec64::MAX);
-    assert_eq!(dec64::MAX + ZERO, dec64::MAX);
+    assert_eq!(ZERO + MAX, MAX);
+    assert_eq!(MAX + ZERO, MAX);
 
-    assert_eq!(ZERO + dec64::MIN, dec64::MIN);
-    assert_eq!(dec64::MIN + ZERO, dec64::MIN);
+    assert_eq!(ZERO + MIN, MIN);
+    assert_eq!(MIN + ZERO, MIN);
 }
 
 #[test]
@@ -35,11 +26,11 @@ fn add_zip() {
     assert_eq!(ZIP + ONE, ONE);
     assert_eq!(ONE + ZIP, ONE);
 
-    assert_eq!(ZIP + dec64::MAX, dec64::MAX);
-    assert_eq!(dec64::MAX + ZIP, dec64::MAX);
+    assert_eq!(ZIP + MAX, MAX);
+    assert_eq!(MAX + ZIP, MAX);
 
-    assert_eq!(ZIP + dec64::MIN, dec64::MIN);
-    assert_eq!(dec64::MIN + ZIP, dec64::MIN);
+    assert_eq!(ZIP + MIN, MIN);
+    assert_eq!(MIN + ZIP, MIN);
 }
 
 #[test]
@@ -69,11 +60,11 @@ fn add_nan() {
     assert_eq!(NAN_NAN + ONE, NAN);
     assert_eq!(ONE + NAN_NAN, NAN);
 
-    assert_eq!(NAN_NAN + dec64::MAX, NAN);
-    assert_eq!(dec64::MAX + NAN_NAN, NAN);
+    assert_eq!(NAN_NAN + MAX, NAN);
+    assert_eq!(MAX + NAN_NAN, NAN);
 
-    assert_eq!(NAN_NAN + dec64::MIN, NAN);
-    assert_eq!(dec64::MIN + NAN_NAN, NAN);
+    assert_eq!(NAN_NAN + MIN, NAN);
+    assert_eq!(MIN + NAN_NAN, NAN);
 }
 
 #[test]
@@ -83,21 +74,21 @@ fn add_neg_tenth() {
 
 #[test]
 fn add_range_overflow() {
-    assert_eq!(dec64::MAX + dec64::MAX, NAN);
-    assert_eq!(dec64::MIN + dec64::MIN, NAN);
+    assert_eq!(MAX + MAX, NAN);
+    assert_eq!(MIN + MIN, NAN);
 }
 
 #[test]
 fn add_minmax() {
     let expect = Dec64::from_parts(-1, 127);
 
-    assert_eq!(dec64::MAX + dec64::MIN, expect);
-    assert_eq!(dec64::MIN + dec64::MAX, expect);
+    assert_eq!(MAX + MIN, expect);
+    assert_eq!(MIN + MAX, expect);
 }
 
 #[test]
 fn add_positive_integer_overflow() {
-    let ten = dec64::more_consts::normal::TEN;
+    let ten = TEN;
     let value = Dec64::from_parts(36028797018963960, 0);
     let expect = Dec64::from_parts(3602879701896397, 1);
     let result = value + ten;
@@ -107,7 +98,7 @@ fn add_positive_integer_overflow() {
 
 #[test]
 fn add_negative_integer_overflow() {
-    let ten = dec64::more_consts::normal::NEG_TEN;
+    let ten = NEG_TEN;
     let value = Dec64::from_parts(-36028797018963960, 0);
     let expect = Dec64::from_parts(-3602879701896397, 1);
     let result = value + ten;
@@ -178,17 +169,17 @@ fn add_with_significance_loss() {
 
 #[test]
 fn add_double_max_coefficient() {
-    let value = Dec64::from_parts(dec64::MAX_COEFFICIENT, 64);
-    let expect = Dec64::from_parts(dec64::MAX_COEFFICIENT * 2 / 10, 65);
+    let value = Dec64::from_parts(MAX_COEFFICIENT, 64);
+    let expect = Dec64::from_parts(MAX_COEFFICIENT * 2 / 10, 65);
 
     assert_eq!(value + value, expect);
 }
 
 #[test]
 fn add_double_min_coefficient() {
-    let value = Dec64::from_parts(dec64::MIN_COEFFICIENT, 64);
+    let value = Dec64::from_parts(MIN_COEFFICIENT, 64);
     // min coefficient is rounded down when scaling exponent since -1.
-    let expect = Dec64::from_parts(dec64::MIN_COEFFICIENT * 2 / 10 - 1, 65);
+    let expect = Dec64::from_parts(MIN_COEFFICIENT * 2 / 10 - 1, 65);
 
     assert_eq!(value + value, expect);
 }
