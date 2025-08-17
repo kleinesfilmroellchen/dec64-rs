@@ -5,6 +5,10 @@
 ### TODO
 
 - [ ] no_std support
+- [ ] other operations
+	- [ ] multiply
+	- [ ] divide
+	- [ ] various math
 - [ ] port all C tests exactly
 - [ ] use C tests to check exact correctness of implementation
 - [ ] port (and/or implement) assembly implementations and cross-check against Rust-only implementation:

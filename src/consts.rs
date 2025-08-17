@@ -84,7 +84,7 @@ pub const HALF: Dec64 = Dec64::from_parts(5, -1_i8);
 /// `0.9999999999999999`
 pub const ALMOST_ONE: Dec64 = Dec64::from_parts(9999999999999999, -16_i8);
 /// `-0.9999999999999999`
-pub const ALMOST_NEG_ONE: Dec64 = Dec64::from_parts(-999999999999999, -16_i8);
+pub const ALMOST_NEG_ONE: Dec64 = Dec64::from_parts(-9999999999999999, -16_i8);
 /// `1.0 / normal::MAXINT`
 pub const FRAC_1_MAXINT: Dec64 = Dec64::from_parts(27755575615628914, -33_i8);
 /// Googol (`10^100`)

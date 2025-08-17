@@ -246,6 +246,15 @@ impl Dec64 {
             false
         }
     }
+
+    #[inline]
+    pub fn abs(self) -> Self {
+        if self.is_nan() {
+            return NAN;
+        }
+        let new_coefficient = self.coefficient().abs();
+        Self::pack(new_coefficient, self.exponent() as i32)
+    }
 }
 
 impl PartialEq<Dec64> for Dec64 {
@@ -397,4 +406,6 @@ macro_rules! impl_integer {
     )*)
 }
 
-impl_integer!(usize, u8, u16, u32, u64, isize, i8, i16, i32, i64);
+impl_integer!(
+    usize, u8, u16, u32, u64, isize, i8, i16, i32, i64, i128, u128
+);
