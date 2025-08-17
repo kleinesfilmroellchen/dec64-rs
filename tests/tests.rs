@@ -1,5 +1,8 @@
 #![allow(clippy::wildcard_imports)]
 
+use core::f32;
+use core::f64;
+
 use dec64::consts::*;
 use dec64::*;
 
@@ -95,20 +98,20 @@ fn roundtrip_i64() {
 
 #[test]
 fn roundrtrip_f32() {
-    let dec = Dec64::from(3.141592653589793_f32);
+    let dec = Dec64::from(f32::consts::PI);
 
     let num: f32 = dec.into();
 
-    assert_eq!(num, 3.141592653589793_f32);
+    assert_eq!(num, f32::consts::PI);
 }
 
 #[test]
 fn roundrtrip_f64() {
-    let dec = Dec64::from(3.141592653589793_f64);
+    let dec = Dec64::from(f64::consts::PI);
 
     let num: f64 = dec.into();
 
-    assert_eq!(num, 3.141592653589793_f64);
+    assert_eq!(num, f64::consts::PI);
 }
 
 #[test]
@@ -162,7 +165,7 @@ fn compose_f64_pi() {
 
     let num: f64 = dec.into();
 
-    assert_eq!(num, 3.141592653589793);
+    assert_eq!(num, f64::consts::PI);
 }
 
 #[test]
@@ -171,7 +174,7 @@ fn compose_f32_pi() {
 
     let num: f32 = dec.into();
 
-    assert_eq!(num, 3.141592653589793);
+    assert_eq!(num, f32::consts::PI);
 }
 
 #[test]
@@ -236,7 +239,7 @@ fn write_pi() {
 
 #[test]
 fn write_pi_from_float() {
-    let dec = Dec64::from(3.141592653589793);
+    let dec = Dec64::from(f64::consts::PI);
     let string = dec.to_string();
     assert_eq!(string, "3.141592653589793");
 }

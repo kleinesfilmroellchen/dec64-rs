@@ -23,6 +23,7 @@ const COEFFICIENT_MASK: i64 = !EXPONENT_MASK;
 const SIGN_MASK: i64 = 1 << 63;
 
 /// The powers of 10.
+#[allow(clippy::inconsistent_digit_grouping)]
 const POWERS_OF_10: [u64; 20] = [
     1,                       // 0
     10,                      // 1
@@ -47,7 +48,7 @@ const POWERS_OF_10: [u64; 20] = [
 ];
 
 /// Struct holding DEC64 value.
-#[derive(Clone, Copy, Default, Ord, Eq)]
+#[derive(Clone, Copy, Default, Eq)]
 #[repr(transparent)]
 pub struct Dec64(i64);
 
@@ -94,7 +95,7 @@ impl Dec64 {
         // Is the exponent within supported range?
         if i32::from(MIN_EXP) <= exponent && exponent <= MAX_EXP.into() {
             // Is the coefficient within supported range?
-            if MIN_COEFFICIENT <= coefficient && coefficient <= MAX_COEFFICIENT {
+            if (MIN_COEFFICIENT..=MAX_COEFFICIENT).contains(&coefficient) {
                 // Coefficient and exponent are OK.
                 return Dec64::from_parts(coefficient, exponent as i8);
             } else {
@@ -111,7 +112,7 @@ impl Dec64 {
                     coefficient /= 10;
                     // Reminder of coefficient division for rounding decision.
                     // Does it fit now?
-                    if MIN_COEFFICIENT <= coefficient && coefficient <= MAX_COEFFICIENT {
+                    if (MIN_COEFFICIENT..=MAX_COEFFICIENT).contains(&coefficient) {
                         // Examine the remainder to determine if the coefficient should be rounded up
                         // or down. We will shift before adding in the rounding bit to get the cheap
                         // overflow check. If rounding does not cause overflow, pack up and get out.
@@ -143,10 +144,7 @@ impl Dec64 {
             loop {
                 // try multiplying the coefficient by 10
                 let (coefficient_mul_10, overflow) = coefficient.overflowing_mul(10);
-                if overflow
-                    || coefficient_mul_10 < MIN_COEFFICIENT
-                    || MAX_COEFFICIENT < coefficient_mul_10
-                {
+                if overflow || !(MIN_COEFFICIENT..=MAX_COEFFICIENT).contains(&coefficient_mul_10) {
                     // We failed to salvage.
                     return NAN;
                 }
@@ -298,7 +296,7 @@ fn exponent_to_power_f64(e: i8) -> f64 {
         1e-14, 1e-15, 1e-16, 1e-17, 1e-18, 1e-19, 1e-20, 1e-21, 1e-22,
     ];
 
-    let index = e.abs() as usize;
+    let index = e.unsigned_abs() as usize;
 
     if index < 23 {
         if e < 0 {
@@ -322,7 +320,7 @@ fn exponent_to_power_f32(e: i8) -> f32 {
         1e-14, 1e-15,
     ];
 
-    let index = e.abs() as usize;
+    let index = e.unsigned_abs() as usize;
 
     if index < 16 {
         if e < 0 {

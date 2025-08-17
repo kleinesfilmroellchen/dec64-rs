@@ -12,3 +12,9 @@ license = "MIT"
 
 [features]
 no_std = []
+
+[lints.clippy]
+all = "deny"
+
+[lints.rust]
+unused = "deny"

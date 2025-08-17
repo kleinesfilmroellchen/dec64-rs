@@ -47,7 +47,7 @@ fn neg_neg_tenth() {
 
 #[test]
 fn neg_max() {
-    let expect = Dec64::from_parts(-MAX_COEFFICIENT, MAX_EXP as i8);
+    let expect = Dec64::from_parts(-MAX_COEFFICIENT, MAX_EXP);
     assert_eq!(-MAX, expect);
 }
 
