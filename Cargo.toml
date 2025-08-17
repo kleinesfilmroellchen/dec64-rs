@@ -9,3 +9,6 @@ authors = [
 description = "DEC64 number type"
 repository = "https://github.com/kleinesfilmroellchen/dec64-rs"
 license = "MIT"
+
+[features]
+no_std = []

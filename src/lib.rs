@@ -5,6 +5,7 @@ mod fmt;
 mod grisu2;
 pub mod more_consts;
 mod ops;
+#[cfg(not(feature = "no_std"))]
 mod write;
 
 /// Minimum value of DEC64 coefficient.
@@ -117,7 +118,7 @@ const POWERS_OF_10: [u64; 20] = [
 ];
 
 /// Struct holding DEC64 value.
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Default, Ord, Eq)]
 #[repr(transparent)]
 pub struct Dec64(i64);
 
@@ -264,6 +265,18 @@ impl Dec64 {
         self.0 as i8
     }
 
+    /// Returns the sign of the DEC64 (-1, 0, 1).
+    #[inline]
+    pub fn sign(self) -> i8 {
+        if self == ZERO {
+            0
+        } else if self < ZERO {
+            -1
+        } else {
+            1
+        }
+    }
+
     /// Returns `true` if DEC64 is any Not a Number (NaN) and `false` otherwise.
     ///
     /// DEC64 NaN have exponent value of `-128`, and any coefficient.
@@ -321,6 +334,23 @@ impl PartialEq<Dec64> for Dec64 {
 
         // Do it the hard way by subtracting. Is the difference zero?
         (*self - *other).is_zero()
+    }
+}
+
+impl PartialOrd<Dec64> for Dec64 {
+    fn partial_cmp(&self, other: &Dec64) -> Option<std::cmp::Ordering> {
+        if self.0 == other.0 {
+            Some(std::cmp::Ordering::Equal)
+        } else {
+            let diff = *self - *other;
+            if diff.is_zero() {
+                Some(std::cmp::Ordering::Equal)
+            } else if diff.coefficient() > 0 {
+                Some(std::cmp::Ordering::Greater)
+            } else {
+                Some(std::cmp::Ordering::Less)
+            }
+        }
     }
 }
 
