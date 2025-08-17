@@ -71,7 +71,7 @@ impl Add for Dec64 {
                     if hi_exponent == lo_exponent {
                         // We can sum & then pack.
                         let sum = hi_coefficient + lo_coefficient;
-                        return Self::pack(sum, hi_exponent as i32);
+                        return Self::new(sum, hi_exponent as i32);
                     }
                 }
 
@@ -87,7 +87,7 @@ impl Add for Dec64 {
                     if hi_exponent == lo_exponent {
                         // We can sum & then pack.
                         let sum = hi_coefficient + lo_coefficient;
-                        return Self::pack(sum, lo_exponent as i32);
+                        return Self::new(sum, lo_exponent as i32);
                     }
                 }
             }
@@ -100,7 +100,7 @@ impl Add for Dec64 {
         // But here we don't have access to the carry flag.
         let sum = self.coefficient() + other.coefficient();
 
-        Self::pack(sum, self.exponent() as i32)
+        Self::new(sum, self.exponent() as i32)
     }
 }
 
@@ -136,7 +136,7 @@ impl Neg for Dec64 {
             (ret, false) => Dec64::from_raw(ret),
             // The coefficient is -36028797018963968, aka. MIN_COEFFICIENT which is the only
             // coefficient that cannot be trivially negated. So we do this the hard way.
-            (_, true) => Self::pack(-self.coefficient(), self.exponent() as i32),
+            (_, true) => Self::new(-self.coefficient(), self.exponent() as i32),
         }
     }
 }

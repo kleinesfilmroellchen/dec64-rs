@@ -4,10 +4,10 @@ use dec64::consts::*;
 use dec64::*;
 
 #[test]
-fn pack_zero() {
+fn zero() {
     let expect = ZERO;
     for i in -256..256 {
-        let result = Dec64::pack(0, i);
+        let result = Dec64::new(0, i);
 
         assert!(result.is_zero());
         assert_eq!(result.coefficient(), 0);
@@ -17,9 +17,9 @@ fn pack_zero() {
 }
 
 #[test]
-fn pack_one() {
-    let one_normal = Dec64::pack(1, 0);
-    let one_low = Dec64::pack(10000000000000000, -16);
+fn one() {
+    let one_normal = Dec64::new(1, 0);
+    let one_low = Dec64::new(10000000000000000, -16);
     let expect = Dec64::from_parts(1, 0);
     assert_eq!(one_normal, expect, "@ normal");
     println!(
@@ -32,11 +32,11 @@ fn pack_one() {
 }
 
 #[test]
-fn pack_min_coefficient() {
+fn min_coefficient() {
     let coefficient = dec64::MIN_COEFFICIENT;
     let exponent = 0;
     let expect = Dec64::from_parts(coefficient, exponent);
-    let result = Dec64::pack(coefficient, exponent as i32);
+    let result = Dec64::new(coefficient, exponent as i32);
 
     assert_eq!(result.coefficient(), coefficient);
     assert_eq!(result.exponent(), exponent);
@@ -44,11 +44,11 @@ fn pack_min_coefficient() {
 }
 
 #[test]
-fn pack_max_coefficient() {
+fn max_coefficient() {
     let coefficient = MAX_COEFFICIENT;
     let exponent = 0;
     let expect = Dec64::from_parts(coefficient, exponent);
-    let result = Dec64::pack(coefficient, exponent as i32);
+    let result = Dec64::new(coefficient, exponent as i32);
 
     assert_eq!(result.coefficient(), coefficient);
     assert_eq!(result.exponent(), exponent);
@@ -56,11 +56,11 @@ fn pack_max_coefficient() {
 }
 
 #[test]
-fn pack_min() {
+fn min() {
     let coefficient = MIN_COEFFICIENT;
     let exponent = MAX_EXP;
     let expect = MIN;
-    let result = Dec64::pack(coefficient, exponent as i32);
+    let result = Dec64::new(coefficient, exponent as i32);
 
     assert_eq!(result.coefficient(), coefficient);
     assert_eq!(result.exponent(), { exponent });
@@ -68,11 +68,11 @@ fn pack_min() {
 }
 
 #[test]
-fn pack_max() {
+fn max() {
     let coefficient = MAX_COEFFICIENT;
     let exponent = MAX_EXP;
     let expect = MAX;
-    let result = Dec64::pack(coefficient, exponent as i32);
+    let result = Dec64::new(coefficient, exponent as i32);
 
     assert_eq!(result.coefficient(), coefficient);
     assert_eq!(result.exponent(), { exponent });
@@ -80,35 +80,35 @@ fn pack_max() {
 }
 
 #[test]
-fn pack_min_minus_one() {
+fn min_minus_one() {
     let coefficient = MIN_COEFFICIENT - 1;
     let exponent = MAX_EXP;
     let expect = NAN;
-    let result = Dec64::pack(coefficient, exponent as i32);
+    let result = Dec64::new(coefficient, exponent as i32);
 
     assert!(result.is_nan());
     assert_eq!(result, expect);
 }
 
 #[test]
-fn pack_max_plus_one() {
+fn max_plus_one() {
     let coefficient = MAX_COEFFICIENT + 1;
     let exponent = MAX_EXP;
     let expect = NAN;
-    let result = Dec64::pack(coefficient, exponent as i32);
+    let result = Dec64::new(coefficient, exponent as i32);
 
     assert!(result.is_nan());
     assert_eq!(result, expect);
 }
 
 #[test]
-fn pack_reduce_exp() {
+fn reduce_exp() {
     let coefficient = 36_028_797_018_963;
     let exponent = 130;
     let expect_coefficient = coefficient * 1000;
     let expect_exponent = MAX_EXP;
     let expect = Dec64::from_parts(expect_coefficient, expect_exponent);
-    let result = Dec64::pack(coefficient, exponent);
+    let result = Dec64::new(coefficient, exponent);
 
     assert_eq!(result.coefficient(), expect_coefficient);
     assert_eq!(result.exponent(), { expect_exponent });
@@ -116,24 +116,24 @@ fn pack_reduce_exp() {
 }
 
 #[test]
-fn pack_reduce_exp_too_big() {
+fn reduce_exp_too_big() {
     let coefficient = 36_028_797_018_964;
     let exponent = 130;
     let expect = NAN;
-    let result = Dec64::pack(coefficient, exponent);
+    let result = Dec64::new(coefficient, exponent);
 
     assert!(result.is_nan());
     assert_eq!(result, expect);
 }
 
 #[test]
-fn pack_increase_exp() {
+fn increase_exp() {
     let coefficient = 1_000;
     let exponent = -130;
     let expect_coefficient = coefficient / 1000;
     let expect_exponent = MIN_EXP;
     let expect = Dec64::from_parts(expect_coefficient, expect_exponent);
-    let result = Dec64::pack(coefficient, exponent);
+    let result = Dec64::new(coefficient, exponent);
 
     assert_eq!(result.coefficient(), expect_coefficient);
     assert_eq!(result.exponent(), { expect_exponent });
@@ -141,11 +141,11 @@ fn pack_increase_exp() {
 }
 
 #[test]
-fn pack_increase_exp_too_small() {
+fn increase_exp_too_small() {
     let coefficient = 100;
     let exponent = -130;
     let expect = ZERO;
-    let result = Dec64::pack(coefficient, exponent);
+    let result = Dec64::new(coefficient, exponent);
 
     assert!(result.is_zero());
     assert_eq!(result, expect);

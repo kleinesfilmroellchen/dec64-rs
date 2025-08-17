@@ -2,7 +2,7 @@ use crate::diyfp::DiyFp;
 use crate::diyfp::get_cached_power;
 
 #[inline]
-unsafe fn grisu_round(buffer: &mut u64, delta: u64, mut rest: u64, ten_kappa: u64, wp_w: u64) {
+fn grisu_round(buffer: &mut u64, delta: u64, mut rest: u64, ten_kappa: u64, wp_w: u64) {
     while rest < wp_w
         && delta - rest >= ten_kappa
         && (rest + ten_kappa < wp_w || // closer
@@ -39,7 +39,7 @@ fn count_decimal_digit32(n: u32) -> i16 {
 }
 
 #[inline]
-unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (u64, i16) {
+fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (u64, i16) {
     static POW10: [u32; 10] = [
         1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000,
     ];
@@ -89,9 +89,7 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (u64, i1
             let pow10 = POW10[kappa as usize] as u64;
             buffer /= pow10;
 
-            unsafe {
-                grisu_round(&mut buffer, delta, tmp, pow10 << -one.e, wp_w.f);
-            }
+            grisu_round(&mut buffer, delta, tmp, pow10 << -one.e, wp_w.f);
             return (buffer, k);
         }
     }
@@ -109,20 +107,18 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (u64, i1
             k += kappa;
             let index = -(kappa as isize);
 
-            unsafe {
-                grisu_round(
-                    &mut buffer,
-                    delta,
-                    p2,
-                    one.f,
-                    wp_w.f
-                        * if index < 9 {
-                            POW10[-(kappa as isize) as usize] as u64
-                        } else {
-                            0
-                        },
-                )
-            };
+            grisu_round(
+                &mut buffer,
+                delta,
+                p2,
+                one.f,
+                wp_w.f
+                    * if index < 9 {
+                        POW10[-(kappa as isize) as usize] as u64
+                    } else {
+                        0
+                    },
+            );
             return (buffer, k);
         }
     }
@@ -130,16 +126,14 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (u64, i1
 
 #[inline]
 pub fn convert(float: f64) -> (u64, i16) {
-    unsafe {
-        let v = DiyFp::from_f64(float);
-        let (w_m, w_p) = v.normalized_boundaries();
-        let (c_mk, k) = get_cached_power(w_p.e);
-        let w = v.normalize() * c_mk;
-        let mut wp = w_p * c_mk;
-        let mut wm = w_m * c_mk;
-        wm.f += 1;
-        wp.f -= 1;
+    let v = DiyFp::from_f64(float);
+    let (w_m, w_p) = v.normalized_boundaries();
+    let (c_mk, k) = get_cached_power(w_p.e);
+    let w = v.normalize() * c_mk;
+    let mut wp = w_p * c_mk;
+    let mut wm = w_m * c_mk;
+    wm.f += 1;
+    wp.f -= 1;
 
-        digit_gen(w, wp, wp.f - wm.f, k as i16)
-    }
+    digit_gen(w, wp, wp.f - wm.f, k as i16)
 }

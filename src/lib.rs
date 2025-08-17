@@ -73,20 +73,12 @@ impl Dec64 {
     }
 
     /// Construct a Dec64 from coefficient and exponent values.
-    /// Currently this is equivalent to `pack()`.
     ///
     /// This will produce only standard (coefficient zeroed) kind of zero and NaN.
-    #[inline]
-    pub fn new(coefficient: i64, exponent: i16) -> Self {
-        Self::pack(coefficient, exponent as i32)
-    }
-
-    /// The pack function will combine the coefficient and exponent into a dec64.
     ///
     /// Numbers that are too huge to be contained in this format become NaN.
-    ///
     /// Numbers that are too tiny to be contained in this format become zero.
-    pub fn pack(mut coefficient: i64, mut exponent: i32) -> Self {
+    pub fn new(mut coefficient: i64, mut exponent: i32) -> Self {
         if coefficient == 0 {
             // If the coefficient is zero, also zero the exponent.
             return ZERO;
@@ -253,7 +245,7 @@ impl Dec64 {
             return NAN;
         }
         let new_coefficient = self.coefficient().abs();
-        Self::pack(new_coefficient, self.exponent() as i32)
+        Self::new(new_coefficient, self.exponent() as i32)
     }
 }
 

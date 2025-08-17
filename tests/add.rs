@@ -107,7 +107,7 @@ fn negative_integer_overflow() {
 }
 
 #[test]
-fn with_ZERO_exponent() {
+fn with_zero_exponent() {
     let coefficient_a = 333;
     let coefficient_b = 222;
     let exponent = 0;
@@ -291,12 +291,7 @@ fn all_c() {
         maxint_plus,
         "MAXINT + something too small"
     );
-    assert_eq_add!(
-        MAXINT,
-        MININT,
-        Dec64::from_parts(-1, 0),
-        "MAXINT + MININT"
-    );
+    assert_eq_add!(MAXINT, MININT, Dec64::from_parts(-1, 0), "MAXINT + MININT");
     assert_eq_add!(MAX, Dec64::from_parts(1, -127), MAX, "insignificance");
     assert_eq_add!(MAX, ONE, MAX, "insignificance");
     assert_eq_add!(MAX, MAXINT, MAX, "insignificance");

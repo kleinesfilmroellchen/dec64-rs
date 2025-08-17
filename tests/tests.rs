@@ -97,7 +97,7 @@ fn roundtrip_i64() {
 }
 
 #[test]
-fn roundrtrip_f32() {
+fn roundtrip_f32() {
     let dec = Dec64::from(f32::consts::PI);
 
     let num: f32 = dec.into();
@@ -106,7 +106,7 @@ fn roundrtrip_f32() {
 }
 
 #[test]
-fn roundrtrip_f64() {
+fn roundtrip_f64() {
     let dec = Dec64::from(f64::consts::PI);
 
     let num: f64 = dec.into();
@@ -336,4 +336,13 @@ fn write_c() {
     assert_eq!(negative_maxint.to_string(), "-36028797018963968");
     assert_eq!(negative_maxnum.to_string(), "-3.6028797018963968e143");
     assert_eq!(negative_pi.to_string(), "-3.1415926535897932");
+}
+
+#[test]
+fn debug() {
+    assert_eq!(format!("{:?}", ONE), "Dec64 { [--I] coef: 1 exp: 0 raw: 0x100 }");
+    assert_eq!(format!("{:?}", ZERO), "Dec64 { [-ZI] coef: 0 exp: 0 raw: 0x0 }");
+    assert_eq!(format!("{:?}", NAN), "Dec64 { [N--] coef: 0 exp: -128 raw: 0x80 }");
+    assert_eq!(format!("{:?}", MAX), "Dec64 { [--I] coef: 36028797018963967 exp: 127 raw: 0x7fffffffffffff7f }");
+    assert_eq!(format!("{:?}", PI), "Dec64 { [---] coef: 31415926535897932 exp: -16 raw: 0x6f9c9e6576434cf0 }");
 }
