@@ -280,7 +280,8 @@ impl PartialEq<Dec64> for Dec64 {
 
 impl PartialOrd<Dec64> for Dec64 {
     fn partial_cmp(&self, other: &Dec64) -> Option<core::cmp::Ordering> {
-        if self.0 == other.0 {
+        // Trivial and NAN equality.
+        if self.0 == other.0 || (self.is_nan() && other.is_nan()) {
             Some(core::cmp::Ordering::Equal)
         } else {
             let diff = *self - *other;

@@ -1,8 +1,7 @@
 #![allow(clippy::wildcard_imports)]
 
-use dec64::consts::*;
-
 use dec64::Dec64;
+use dec64::consts::*;
 
 macro_rules! assert_eq_mult {
     ($lhs:expr, $rhs:expr, $result:expr, $msg:expr) => {

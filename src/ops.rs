@@ -161,14 +161,14 @@ impl Mul for Dec64 {
         // last bit that was flushed out during coefficient reduction
         let mut last_flushed_bit = 0;
         let mut new_exponent = self.exponent() as i16 + rhs.exponent() as i16;
-        println!("-- {full_coefficient} * 10^{new_exponent}");
+        // println!("-- {full_coefficient} * 10^{new_exponent}");
         // Reduce coefficient as needed (possibly reducing precision):
         // either coefficient is out of range, or exponent is too small.
         while !Self::coefficient_in_range(full_coefficient) || new_exponent < MIN_EXP.into() {
             last_flushed_bit = full_coefficient.abs() % 10;
             full_coefficient /= 10;
             new_exponent += 1;
-            println!("reduced out-of-range coeff {full_coefficient} at exponent {new_exponent}");
+            // println!("reduced out-of-range coeff {full_coefficient} at exponent {new_exponent}");
         }
 
         // Reduce exponent as needed while increasing the coefficient (but not past what we did above)
@@ -176,7 +176,7 @@ impl Mul for Dec64 {
             last_flushed_bit = 0;
             full_coefficient *= 10;
             new_exponent -= 1;
-            println!("increased coeff {full_coefficient} for exponent {new_exponent}");
+            // println!("increased coeff {full_coefficient} for exponent {new_exponent}");
         }
 
         // Number is out of range (still), so return nan (if too large) or zero (if too small)
@@ -211,35 +211,46 @@ impl Div for Dec64 {
         }
 
         // (c1 * 10^e1) * (c2 * 10^e2)^-1 = (c1 * c2^-1) * 10^(e1-e2)
-        let mut lhs_coefficient = self.coefficient();
-        let mut rhs_coefficient = rhs.coefficient();
+        let mut lhs_coefficient = self.coefficient() as i128;
+        let rhs_coefficient = rhs.coefficient() as i128;
         let mut maybe_coefficient = lhs_coefficient / rhs_coefficient;
         let mut coefficient_remainder = lhs_coefficient % rhs_coefficient;
-        let new_exponent = self.exponent() as i16 - rhs.exponent() as i16;
+        let mut new_exponent = self.exponent() as i16 - rhs.exponent() as i16;
+
+        // println!("coeff {maybe_coefficient} rem {coefficient_remainder}");
 
         // Slow path: Division is inexact, increase coefficient sizes either until limit is reached or until division becomes exact.
         while coefficient_remainder != 0 {
+            let (new_lhs, overflow) = lhs_coefficient.overflowing_mul(10);
             // Reached coefficient precision limit, stop here.
-            if !Self::coefficient_in_range(lhs_coefficient)
-                || Self::coefficient_in_range(rhs_coefficient)
-            {
+            if !Self::coefficient_in_range(maybe_coefficient) || overflow {
+                let last_flushed_bit = maybe_coefficient.abs() % 10;
                 lhs_coefficient /= 10;
-                rhs_coefficient /= 10;
-                maybe_coefficient = lhs_coefficient / rhs_coefficient;
+                new_exponent += 1;
+                maybe_coefficient = lhs_coefficient / rhs_coefficient
+                    + if last_flushed_bit >= 5 {
+                        maybe_coefficient.signum()
+                    } else {
+                        0
+                    };
+                // println!(
+                //     "stopping since out of range: lhs {lhs_coefficient} rem {coefficient_remainder} flushbit {last_flushed_bit}"
+                // );
                 break;
             }
-            lhs_coefficient *= 10;
-            rhs_coefficient *= 10;
+            lhs_coefficient = new_lhs;
+            new_exponent -= 1;
             maybe_coefficient = lhs_coefficient / rhs_coefficient;
             coefficient_remainder = lhs_coefficient % rhs_coefficient;
+            // println!("increased precision: coeff {maybe_coefficient} rem {coefficient_remainder}");
         }
-        // Exponent is out of range now, so return nan (if too large) or zero (if too small)
+        // Exponent is out of range, so return nan (if too large) or zero (if too small)
         if new_exponent > MAX_EXP.into() {
             NAN
         } else if new_exponent < MIN_EXP.into() {
             ZERO
         } else {
-            Self::from_parts(maybe_coefficient, new_exponent as i8)
+            Self::from_parts(maybe_coefficient as i64, new_exponent as i8)
         }
     }
 }
