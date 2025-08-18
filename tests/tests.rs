@@ -340,9 +340,24 @@ fn write_c() {
 
 #[test]
 fn debug() {
-    assert_eq!(format!("{:?}", ONE), "Dec64 { [--I] coef: 1 exp: 0 raw: 0x100 }");
-    assert_eq!(format!("{:?}", ZERO), "Dec64 { [-ZI] coef: 0 exp: 0 raw: 0x0 }");
-    assert_eq!(format!("{:?}", NAN), "Dec64 { [N--] coef: 0 exp: -128 raw: 0x80 }");
-    assert_eq!(format!("{:?}", MAX), "Dec64 { [--I] coef: 36028797018963967 exp: 127 raw: 0x7fffffffffffff7f }");
-    assert_eq!(format!("{:?}", PI), "Dec64 { [---] coef: 31415926535897932 exp: -16 raw: 0x6f9c9e6576434cf0 }");
+    assert_eq!(
+        format!("{:?}", ONE),
+        "Dec64 { [--I] coef: 1 exp: 0 raw: 0x100 }"
+    );
+    assert_eq!(
+        format!("{:?}", ZERO),
+        "Dec64 { [-ZI] coef: 0 exp: 0 raw: 0x0 }"
+    );
+    assert_eq!(
+        format!("{:?}", NAN),
+        "Dec64 { [N--] coef: 0 exp: -128 raw: 0x80 }"
+    );
+    assert_eq!(
+        format!("{:?}", MAX),
+        "Dec64 { [--I] coef: 36028797018963967 exp: 127 raw: 0x7fffffffffffff7f }"
+    );
+    assert_eq!(
+        format!("{:?}", PI),
+        "Dec64 { [---] coef: 31415926535897932 exp: -16 raw: 0x6f9c9e6576434cf0 }"
+    );
 }

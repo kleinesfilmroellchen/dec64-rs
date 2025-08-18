@@ -239,6 +239,7 @@ impl Dec64 {
         }
     }
 
+    /// Calculates the absolute value of this DEC64. In rare cases, this will lead to precision loss if the positive coefficient becomes too large to fit.
     #[inline]
     pub fn abs(self) -> Self {
         if self.is_nan() {
@@ -246,6 +247,14 @@ impl Dec64 {
         }
         let new_coefficient = self.coefficient().abs();
         Self::new(new_coefficient, self.exponent() as i32)
+    }
+
+    #[inline]
+    fn coefficient_in_range<T>(coefficient: T) -> bool
+    where
+        T: From<i64> + PartialOrd,
+    {
+        (T::from(MIN_COEFFICIENT)..=T::from(MAX_COEFFICIENT)).contains(&coefficient)
     }
 }
 

@@ -1,6 +1,8 @@
 //! Implementation of traits from `std::ops`.
 
-use std::ops::{Add, Neg, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
+
+use crate::{MAX_EXP, MIN_EXP};
 
 use super::{COEFFICIENT_MASK, Dec64, NAN, ZERO};
 
@@ -137,6 +139,107 @@ impl Neg for Dec64 {
             // The coefficient is -36028797018963968, aka. MIN_COEFFICIENT which is the only
             // coefficient that cannot be trivially negated. So we do this the hard way.
             (_, true) => Self::new(-self.coefficient(), self.exponent() as i32),
+        }
+    }
+}
+
+impl Mul for Dec64 {
+    type Output = Dec64;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        if self.is_nan() || rhs.is_nan() {
+            return NAN;
+        }
+        if self.is_zero() || rhs.is_zero() {
+            return ZERO;
+        }
+
+        // (c1 * 10^e1) * (c2 * 10^e2) = c1 * c2 * 10^(e1 + e2)
+
+        // Do multiplication in 128 bits and reduce coefficient later.
+        let mut full_coefficient = self.coefficient() as i128 * rhs.coefficient() as i128;
+        // last bit that was flushed out during coefficient reduction
+        let mut last_flushed_bit = 0;
+        let mut new_exponent = self.exponent() as i16 + rhs.exponent() as i16;
+        println!("-- {full_coefficient} * 10^{new_exponent}");
+        // Reduce coefficient as needed (possibly reducing precision):
+        // either coefficient is out of range, or exponent is too small.
+        while !Self::coefficient_in_range(full_coefficient) || new_exponent < MIN_EXP.into() {
+            last_flushed_bit = full_coefficient.abs() % 10;
+            full_coefficient /= 10;
+            new_exponent += 1;
+            println!("reduced out-of-range coeff {full_coefficient} at exponent {new_exponent}");
+        }
+
+        // Reduce exponent as needed while increasing the coefficient (but not past what we did above)
+        while new_exponent > MAX_EXP.into() && Self::coefficient_in_range(full_coefficient) {
+            last_flushed_bit = 0;
+            full_coefficient *= 10;
+            new_exponent -= 1;
+            println!("increased coeff {full_coefficient} for exponent {new_exponent}");
+        }
+
+        // Number is out of range (still), so return nan (if too large) or zero (if too small)
+        if new_exponent > MAX_EXP.into() || !Self::coefficient_in_range(full_coefficient) {
+            NAN
+        } else if new_exponent < MIN_EXP.into() {
+            ZERO
+        } else {
+            // Add 1 to coefficient
+            Self::from_parts(
+                (full_coefficient
+                    + if last_flushed_bit >= 5 {
+                        full_coefficient.signum()
+                    } else {
+                        0
+                    }) as _,
+                new_exponent as _,
+            )
+        }
+    }
+}
+
+impl Div for Dec64 {
+    type Output = Dec64;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        if self.is_nan() || rhs.is_nan() || rhs.is_zero() {
+            return NAN;
+        }
+        if self.is_zero() {
+            return ZERO;
+        }
+
+        // (c1 * 10^e1) * (c2 * 10^e2)^-1 = (c1 * c2^-1) * 10^(e1-e2)
+        let mut lhs_coefficient = self.coefficient();
+        let mut rhs_coefficient = rhs.coefficient();
+        let mut maybe_coefficient = lhs_coefficient / rhs_coefficient;
+        let mut coefficient_remainder = lhs_coefficient % rhs_coefficient;
+        let new_exponent = self.exponent() as i16 - rhs.exponent() as i16;
+
+        // Slow path: Division is inexact, increase coefficient sizes either until limit is reached or until division becomes exact.
+        while coefficient_remainder != 0 {
+            // Reached coefficient precision limit, stop here.
+            if !Self::coefficient_in_range(lhs_coefficient)
+                || Self::coefficient_in_range(rhs_coefficient)
+            {
+                lhs_coefficient /= 10;
+                rhs_coefficient /= 10;
+                maybe_coefficient = lhs_coefficient / rhs_coefficient;
+                break;
+            }
+            lhs_coefficient *= 10;
+            rhs_coefficient *= 10;
+            maybe_coefficient = lhs_coefficient / rhs_coefficient;
+            coefficient_remainder = lhs_coefficient % rhs_coefficient;
+        }
+        // Exponent is out of range now, so return nan (if too large) or zero (if too small)
+        if new_exponent > MAX_EXP.into() {
+            NAN
+        } else if new_exponent < MIN_EXP.into() {
+            ZERO
+        } else {
+            Self::from_parts(maybe_coefficient, new_exponent as i8)
         }
     }
 }
