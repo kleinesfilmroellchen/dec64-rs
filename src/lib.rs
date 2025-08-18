@@ -3,10 +3,11 @@ use core::f32;
 
 pub mod consts;
 mod diyfp;
+#[cfg(feature = "std")]
 mod fmt;
 mod grisu2;
 mod ops;
-#[cfg(not(feature = "no_std"))]
+#[cfg(feature = "std")]
 mod write;
 
 /// Minimum value of DEC64 coefficient.
@@ -278,17 +279,17 @@ impl PartialEq<Dec64> for Dec64 {
 }
 
 impl PartialOrd<Dec64> for Dec64 {
-    fn partial_cmp(&self, other: &Dec64) -> Option<std::cmp::Ordering> {
+    fn partial_cmp(&self, other: &Dec64) -> Option<core::cmp::Ordering> {
         if self.0 == other.0 {
-            Some(std::cmp::Ordering::Equal)
+            Some(core::cmp::Ordering::Equal)
         } else {
             let diff = *self - *other;
             if diff.is_zero() {
-                Some(std::cmp::Ordering::Equal)
+                Some(core::cmp::Ordering::Equal)
             } else if diff.coefficient() > 0 {
-                Some(std::cmp::Ordering::Greater)
+                Some(core::cmp::Ordering::Greater)
             } else {
-                Some(std::cmp::Ordering::Less)
+                Some(core::cmp::Ordering::Less)
             }
         }
     }

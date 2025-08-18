@@ -4,13 +4,13 @@
 
 ### TODO
 
-- [ ] no_std support
+- [x] no_std support
 - [ ] other operations
-	- [ ] multiply
+	- [x] multiply
 	- [ ] divide
 	- [ ] various math
 - [ ] port all C tests exactly
-- [ ] use C tests to check exact correctness of implementation
+	- [ ] use C tests to check exact correctness of implementation
 - [ ] port (and/or implement) assembly implementations and cross-check against Rust-only implementation:
 	- [ ] RISC-V RV64IM
 	- [ ] Aarch64

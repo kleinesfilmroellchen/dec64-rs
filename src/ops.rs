@@ -1,6 +1,6 @@
-//! Implementation of traits from `std::ops`.
+//! Implementation of traits from `core::ops`.
 
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use core::ops::{Add, Div, Mul, Neg, Sub};
 
 use crate::{MAX_EXP, MIN_EXP};
 
