@@ -23,7 +23,11 @@ fn all_c() {
     assert_eq_floor!(HALF, ZERO, "HALF");
     assert_eq_floor!(ONE, ONE, "ONE");
     assert_eq_floor!(NEG_ONE, NEG_ONE, "NEG_ONE");
-    assert_eq_floor!(Dec64::new(10000000000000001, -16), ONE, "1.0000000000000001");
+    assert_eq_floor!(
+        Dec64::new(10000000000000001, -16),
+        ONE,
+        "1.0000000000000001"
+    );
     assert_eq_floor!(
         Dec64::new(-10000000000000001, -16),
         Dec64::new(-2, 0),
@@ -51,8 +55,16 @@ fn all_c() {
         Dec64::new(-2, 0),
         "-1.25"
     );
-    assert_eq_floor!(Dec64::new(-1500000000000000, -15), Dec64::new(-2, 0), "-1.5");
-    assert_eq_floor!(Dec64::new(-1560000000000000, -15), Dec64::new(-2, 0), "-1.56");
+    assert_eq_floor!(
+        Dec64::new(-1500000000000000, -15),
+        Dec64::new(-2, 0),
+        "-1.5"
+    );
+    assert_eq_floor!(
+        Dec64::new(-1560000000000000, -15),
+        Dec64::new(-2, 0),
+        "-1.56"
+    );
     assert_eq_floor!(Dec64::new(-11111111111111111, -17), NEG_ONE, "-0.1...");
     assert_eq_floor!(Dec64::new(-22222222222222222, -17), NEG_ONE, "-0.2...");
     assert_eq_floor!(Dec64::new(-33333333333333333, -17), NEG_ONE, "-0.3...");

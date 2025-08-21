@@ -1,16 +1,21 @@
 #![allow(clippy::wildcard_imports)]
+#![allow(unused)]
 
 use dec64::Dec64;
 use dec64::consts::*;
 
 macro_rules! assert_eq_mult {
     ($lhs:expr, $rhs:expr, $result:expr, $msg:expr) => {
-        assert_eq!($lhs * $rhs, $result, $msg)
+        assert_eq!(core::hint::black_box($lhs * $rhs), $result, $msg)
     };
 }
 
 #[test]
 fn all_c() {
+    all_c_tests();
+}
+
+pub fn all_c_tests() {
     assert_eq_mult!(
         Dec64::new(4195835, 0),
         Dec64::new(3145727, 0),

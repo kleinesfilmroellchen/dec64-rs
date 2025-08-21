@@ -1,4 +1,5 @@
 #![allow(clippy::wildcard_imports)]
+#![allow(unused)]
 
 use dec64::consts::*;
 use dec64::*;
@@ -186,12 +187,16 @@ fn double_min_coefficient() {
 
 macro_rules! assert_eq_add {
     ($first:expr, $second:expr, $result:expr, $msg:expr) => {
-        assert_eq!($first + $second, $result, $msg)
+        assert_eq!(core::hint::black_box($first + $second), $result, $msg)
     };
 }
 
 #[test]
 fn all_c() {
+    all_c_tests();
+}
+
+pub fn all_c_tests() {
     let maxint_plus: Dec64 = MAXINT + ONE;
 
     assert_eq_add!(NAN, ZERO, NAN, "NAN + ZERO");

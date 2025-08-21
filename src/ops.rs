@@ -225,9 +225,8 @@ impl Div for Dec64 {
             // Reached coefficient precision limit, stop here.
             if !Self::coefficient_in_range(maybe_coefficient) || overflow {
                 let last_flushed_bit = maybe_coefficient.abs() % 10;
-                lhs_coefficient /= 10;
                 new_exponent += 1;
-                maybe_coefficient = lhs_coefficient / rhs_coefficient
+                maybe_coefficient = (maybe_coefficient / 10)
                     + if last_flushed_bit >= 5 {
                         maybe_coefficient.signum()
                     } else {

@@ -10,7 +10,6 @@ description = "DEC64 number type"
 repository = "https://github.com/kleinesfilmroellchen/dec64-rs"
 license = "MIT"
 
-
 [features]
 std = []
 default = ["std"]
@@ -20,3 +19,10 @@ all = "deny"
 
 [lints.rust]
 unused = "deny"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "ops"
+harness = false

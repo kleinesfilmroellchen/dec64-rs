@@ -6,10 +6,10 @@ mod diyfp;
 #[cfg(feature = "std")]
 mod fmt;
 mod grisu2;
+mod math;
 mod ops;
 #[cfg(feature = "std")]
 mod write;
-mod math;
 
 /// Minimum value of DEC64 coefficient.
 pub const MIN_COEFFICIENT: i64 = -0x80000000000000;

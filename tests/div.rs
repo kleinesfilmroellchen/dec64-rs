@@ -1,16 +1,21 @@
 #![allow(clippy::wildcard_imports)]
+#![allow(unused)]
 
 use dec64::Dec64;
 use dec64::consts::*;
 
 macro_rules! assert_eq_div {
     ($lhs:expr, $rhs:expr, $result:expr, $msg:expr) => {
-        assert_eq!($lhs / $rhs, $result, $msg)
+        assert_eq!(core::hint::black_box($lhs / $rhs), $result, $msg)
     };
 }
 
 #[test]
 fn all_c() {
+    all_c_tests();
+}
+
+pub fn all_c_tests() {
     assert_eq_div!(SIX, THREE, Dec64::new(20000000000000000, -16), "6 / 3");
     assert_eq_div!(NAN_NAN, TWO, NAN, "NAN_NAN / 2");
     assert_eq_div!(NAN, TWO, NAN, "NAN / 2");
