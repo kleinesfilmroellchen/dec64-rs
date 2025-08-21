@@ -9,10 +9,10 @@ This Rust implementation of DEC64 provides a fast, natively-represented implemen
 - Common arithmetic operators and traits implemented (`Eq`, `Ord`), so it behaves like any other numeric type
 - Many edge cases handled better than C/Assembly implementations
 - Conversion from any integer type (possibly with precision loss for very large magnitudes)
-- Conversion from any binary floating-point type (again with possible precision loss)
+- Conversion from any binary floating-point type (again with possible precision loss), using the [Grisu2](https://www.cs.tufts.edu/~nr/cs257/archive/florian-loitsch/printf.pdf) algorithm to do so very quickly.
 - [`Display`] implementation; FromString and other serialization WIP
 - No unsafe code
-- `no_std` support by disabling the default `std` feature
+- `no_std` support by disabling the default `std` feature (removes string conversion functionality)
 - Lots of tests, mostly ported from the C implementation, ensuring matching behavior in most cases
 
 The future plan (see below) is to implement at least some functionality directly in assembly (usually by porting the public-domain assembly implementations), but for now, the safe Rust code is fast enough for many applications.
