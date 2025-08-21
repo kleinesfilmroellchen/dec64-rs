@@ -37,12 +37,12 @@ pub fn all_c_tests() {
     assert_eq_mult!(NAN, NAN, NAN, "NAN * NAN");
     // Discrepancy from C implementation: Any operation with NAN must produce NAN, according to https://www.crockford.com/dec64.html
     assert_eq_mult!(NAN, ZERO, NAN, "NAN * ZERO");
-    assert_eq_mult!(NAN_NAN, NAN_NAN, NAN, "NAN_NAN * NAN_NAN");
-    assert_eq_mult!(NAN_NAN, ONE, NAN, "NAN_NAN * 1");
+    assert_eq_mult!(NONNORMAL_NAN, NONNORMAL_NAN, NAN, "NAN_NAN * NAN_NAN");
+    assert_eq_mult!(NONNORMAL_NAN, ONE, NAN, "NAN_NAN * 1");
     // Discrepancy from C implementation: Any operation with NAN must produce NAN
     assert_eq_mult!(ZERO, NAN, NAN, "0 * NAN");
     // Discrepancy from C implementation: Any operation with NAN must produce NAN
-    assert_eq_mult!(ZERO, NAN_NAN, NAN, "0 * NAN_NAN");
+    assert_eq_mult!(ZERO, NONNORMAL_NAN, NAN, "0 * NAN_NAN");
     assert_eq_mult!(ZERO, ZIP, ZERO, "ZERO * ZIP");
     assert_eq_mult!(ZERO, MAX, ZERO, "ZERO * MAX");
     assert_eq_mult!(ZIP, ZERO, ZERO, "ZIP * ZERO");
@@ -56,9 +56,9 @@ pub fn all_c_tests() {
     // Discrepancy from C implementation: Producing too large values (here: coefficients) results in NAN, not in zero.
     assert_eq_mult!(MIN, MIN, NAN, "MIN * MIN");
     assert_eq_mult!(EPSILON, EPSILON, Dec64::new(1, -32), "EPSILON * EPSILON");
-    assert_eq_mult!(ONE, NAN_NAN, NAN, "1 * NAN_NAN");
-    assert_eq_mult!(NEG_ONE, ONE, NEG_ONE, "-1 * 1");
-    assert_eq_mult!(NEG_ONE, NEG_ONE, ONE, "-1 * -1");
+    assert_eq_mult!(ONE, NONNORMAL_NAN, NAN, "1 * NAN_NAN");
+    assert_eq_mult!(NEGATIVE_ONE, ONE, NEGATIVE_ONE, "-1 * 1");
+    assert_eq_mult!(NEGATIVE_ONE, NEGATIVE_ONE, ONE, "-1 * -1");
     assert_eq_mult!(TWO, FIVE, TEN, "2 * 5");
     assert_eq_mult!(TWO, MAX, NAN, "2 * MAX");
     assert_eq_mult!(

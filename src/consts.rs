@@ -13,7 +13,9 @@ pub const MAX: Dec64 = Dec64::from_parts(MAX_COEFFICIENT, MAX_EXP);
 /// Smallest DEC64 value = `-36_028_797_018_963_968_e127`.
 pub const MIN: Dec64 = Dec64::from_parts(MIN_COEFFICIENT, MAX_EXP);
 /// Smallest positive DEC64 = `1.0_e-127`.
-pub const MIN_POSITIVE: Dec64 = Dec64::from_parts(1, MIN_EXP);
+pub const TINIEST: Dec64 = Dec64::from_parts(1, MIN_EXP);
+/// Largest negative DEC64 = `-1.0_e-127`
+pub const NEGATIVE_TINIEST: Dec64 = Dec64::from_parts(-1, MIN_EXP);
 
 /// Archimedes constant: π = `3.1415926535897932`.
 pub const PI: Dec64 = Dec64::from_parts(31_415_926_535_897_932, -16_i8);
@@ -70,12 +72,12 @@ pub const LN_2: Dec64 = Dec64::from_parts(6_931_471_805_599_453, -16_i8);
 pub const LN_10: Dec64 = Dec64::from_parts(23_025_850_929_940_457, -16_i8);
 
 /// A non-normal `NaN`.
-pub const NAN_NAN: Dec64 = Dec64::from_raw(0x8080);
+pub const NONNORMAL_NAN: Dec64 = Dec64::from_raw(0x8080);
 /// Difference between `1.0` and the previous largest representable number = `1.0_e-16`.
-pub const NEG_EPSILON: Dec64 = Dec64::from_parts(-1, -16_i8);
-/// A non normal `0`.
+pub const NEGATIVE_EPSILON: Dec64 = Dec64::from_parts(-1, -16_i8);
+/// A non-normal `0`.
 pub const ZIP: Dec64 = Dec64::from_raw(90);
-/// `0.01`
+/// `0.01` (one hundredth)
 pub const CENT: Dec64 = Dec64::from_parts(1, -2_i8);
 /// `0.1`
 pub const TENTH: Dec64 = Dec64::from_parts(1, -1_i8);
@@ -84,43 +86,61 @@ pub const HALF: Dec64 = Dec64::from_parts(5, -1_i8);
 /// `0.9999999999999999`
 pub const ALMOST_ONE: Dec64 = Dec64::from_parts(9999999999999999, -16_i8);
 /// `-0.9999999999999999`
-pub const ALMOST_NEG_ONE: Dec64 = Dec64::from_parts(-9999999999999999, -16_i8);
+pub const ALMOST_NEGATIVE_ONE: Dec64 = Dec64::from_parts(-9999999999999999, -16_i8);
 /// `1.0 / normal::MAXINT`
 pub const FRAC_1_MAXINT: Dec64 = Dec64::from_parts(27755575615628914, -33_i8);
 /// Googol (`10^100`)
 pub const GOOGOL: Dec64 = Dec64::from_parts(1, 100);
-/// The smallest possible negative number.
-pub const NEG_MINNUM: Dec64 = Dec64::from_parts(-1, super::MIN_EXP);
 /// -PI
-pub const NEG_PI: Dec64 = Dec64::from_parts(-31415926535897932, -16_i8);
+pub const NEGATIVE_PI: Dec64 = Dec64::from_parts(-31415926535897932, -16_i8);
 /// `-0.1`
-pub const NEG_TENTH: Dec64 = Dec64::from_parts(-1, -1_i8);
+pub const NEGATIVE_TENTH: Dec64 = Dec64::from_parts(-1, -1_i8);
 /// `-0.2`
-pub const NEG_FIFTH: Dec64 = Dec64::from_parts(-2, -1_i8);
+pub const NEGATIVE_FIFTH: Dec64 = Dec64::from_parts(-2, -1_i8);
 
+/// `1`
 pub const ONE: Dec64 = Dec64::from_parts(1, 0);
+/// `2`
 pub const TWO: Dec64 = Dec64::from_parts(2, 0);
+/// `3`
 pub const THREE: Dec64 = Dec64::from_parts(3, 0);
+/// `4`
 pub const FOUR: Dec64 = Dec64::from_parts(4, 0);
+/// `5`
 pub const FIVE: Dec64 = Dec64::from_parts(5, 0);
+/// `6`
 pub const SIX: Dec64 = Dec64::from_parts(6, 0);
+/// `7`
 pub const SEVEN: Dec64 = Dec64::from_parts(7, 0);
+/// `8`
 pub const EIGHT: Dec64 = Dec64::from_parts(8, 0);
+/// `9`
 pub const NINE: Dec64 = Dec64::from_parts(9, 0);
-pub const TEN: Dec64 = Dec64::from_parts(10, 0);
+/// `10`
+pub const TEN: Dec64 = Dec64::from_parts(1, 1);
 
-pub const NEG_ONE: Dec64 = Dec64::from_parts(-1, 0);
-pub const NEG_TWO: Dec64 = Dec64::from_parts(-2, 0);
-pub const NEG_THREE: Dec64 = Dec64::from_parts(-3, 0);
-pub const NEG_FOUR: Dec64 = Dec64::from_parts(-4, 0);
-pub const NEG_FIVE: Dec64 = Dec64::from_parts(-5, 0);
-pub const NEG_SIX: Dec64 = Dec64::from_parts(-6, 0);
-pub const NEG_SEVEN: Dec64 = Dec64::from_parts(-7, 0);
-pub const NEG_EIGHT: Dec64 = Dec64::from_parts(-8, 0);
-pub const NEG_NINE: Dec64 = Dec64::from_parts(-9, 0);
-pub const NEG_TEN: Dec64 = Dec64::from_parts(-10, 0);
+/// `-1`
+pub const NEGATIVE_ONE: Dec64 = Dec64::from_parts(-1, 0);
+/// `-2`
+pub const NEGATIVE_TWO: Dec64 = Dec64::from_parts(-2, 0);
+/// `-3`
+pub const NEGATIVE_THREE: Dec64 = Dec64::from_parts(-3, 0);
+/// `-4`
+pub const NEGATIVE_FOUR: Dec64 = Dec64::from_parts(-4, 0);
+/// `-5`
+pub const NEGATIVE_FIVE: Dec64 = Dec64::from_parts(-5, 0);
+/// `-6`
+pub const NEGATIVE_SIX: Dec64 = Dec64::from_parts(-6, 0);
+/// `-7`
+pub const NEGATIVE_SEVEN: Dec64 = Dec64::from_parts(-7, 0);
+/// `-8`
+pub const NEGATIVE_EIGHT: Dec64 = Dec64::from_parts(-8, 0);
+/// `-9`
+pub const NEGATIVE_NINE: Dec64 = Dec64::from_parts(-9, 0);
+/// `-10`
+pub const NEGATIVE_TEN: Dec64 = Dec64::from_parts(-1, 1);
 
-/// Maximal normal integer.
+/// Maximal normal integer: maximum coefficient and exponent 0
 pub const MAXINT: Dec64 = Dec64::from_parts(super::MAX_COEFFICIENT, 0);
-/// Minimal normal integer.
+/// Minimal normal integer: minimum coefficient and exponent 0
 pub const MININT: Dec64 = Dec64::from_parts(super::MIN_COEFFICIENT, 0);

@@ -195,7 +195,7 @@ fn compose_min() {
 fn compose_min_positive() {
     let dec = Dec64::from_parts(1, -127);
 
-    assert_eq!(dec, MIN_POSITIVE);
+    assert_eq!(dec, TINIEST);
 }
 
 #[test]

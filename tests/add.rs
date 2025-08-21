@@ -37,40 +37,40 @@ fn zip() {
 #[test]
 fn trivial() {
     assert_eq!(ONE + ONE, TWO);
-    assert_eq!(ONE + NEG_ONE, ZERO);
-    assert_eq!(NEG_ONE + ONE, ZERO);
+    assert_eq!(ONE + NEGATIVE_ONE, ZERO);
+    assert_eq!(NEGATIVE_ONE + ONE, ZERO);
 }
 
 #[test]
 fn same_neg() {
-    assert_eq!(NEG_ONE + NEG_ONE, NEG_TWO);
-    assert_eq!(NEG_TWO + NEG_TWO, NEG_FOUR);
-    assert_eq!(NEG_FOUR + NEG_FOUR, NEG_EIGHT);
+    assert_eq!(NEGATIVE_ONE + NEGATIVE_ONE, NEGATIVE_TWO);
+    assert_eq!(NEGATIVE_TWO + NEGATIVE_TWO, NEGATIVE_FOUR);
+    assert_eq!(NEGATIVE_FOUR + NEGATIVE_FOUR, NEGATIVE_EIGHT);
 }
 
 #[test]
 fn nan() {
-    assert_eq!(NAN_NAN + NAN_NAN, NAN);
+    assert_eq!(NONNORMAL_NAN + NONNORMAL_NAN, NAN);
 
-    assert_eq!(NAN_NAN + ZERO, NAN);
-    assert_eq!(ZERO + NAN_NAN, NAN);
+    assert_eq!(NONNORMAL_NAN + ZERO, NAN);
+    assert_eq!(ZERO + NONNORMAL_NAN, NAN);
 
-    assert_eq!(NAN_NAN + ZIP, NAN);
-    assert_eq!(ZIP + NAN_NAN, NAN);
+    assert_eq!(NONNORMAL_NAN + ZIP, NAN);
+    assert_eq!(ZIP + NONNORMAL_NAN, NAN);
 
-    assert_eq!(NAN_NAN + ONE, NAN);
-    assert_eq!(ONE + NAN_NAN, NAN);
+    assert_eq!(NONNORMAL_NAN + ONE, NAN);
+    assert_eq!(ONE + NONNORMAL_NAN, NAN);
 
-    assert_eq!(NAN_NAN + MAX, NAN);
-    assert_eq!(MAX + NAN_NAN, NAN);
+    assert_eq!(NONNORMAL_NAN + MAX, NAN);
+    assert_eq!(MAX + NONNORMAL_NAN, NAN);
 
-    assert_eq!(NAN_NAN + MIN, NAN);
-    assert_eq!(MIN + NAN_NAN, NAN);
+    assert_eq!(NONNORMAL_NAN + MIN, NAN);
+    assert_eq!(MIN + NONNORMAL_NAN, NAN);
 }
 
 #[test]
 fn neg_tenth() {
-    assert_eq!(NEG_TENTH + NEG_TENTH, NEG_FIFTH);
+    assert_eq!(NEGATIVE_TENTH + NEGATIVE_TENTH, NEGATIVE_FIFTH);
 }
 
 #[test]
@@ -99,7 +99,7 @@ fn positive_integer_overflow() {
 
 #[test]
 fn negative_integer_overflow() {
-    let ten = NEG_TEN;
+    let ten = NEGATIVE_TEN;
     let value = Dec64::from_parts(-36028797018963960, 0);
     let expect = Dec64::from_parts(-3602879701896397, 1);
     let result = value + ten;
@@ -201,9 +201,9 @@ pub fn all_c_tests() {
 
     assert_eq_add!(NAN, ZERO, NAN, "NAN + ZERO");
     assert_eq_add!(NAN, NAN, NAN, "NAN + NAN");
-    assert_eq_add!(NAN_NAN, ONE, NAN, "NAN_NAN + 1");
-    assert_eq_add!(NAN_NAN, NAN_NAN, NAN, "NAN_NAN + NAN_NAN");
-    assert_eq_add!(ZERO, NAN_NAN, NAN, "0 + NAN_NAN");
+    assert_eq_add!(NONNORMAL_NAN, ONE, NAN, "NAN_NAN + 1");
+    assert_eq_add!(NONNORMAL_NAN, NONNORMAL_NAN, NAN, "NAN_NAN + NAN_NAN");
+    assert_eq_add!(ZERO, NONNORMAL_NAN, NAN, "0 + NAN_NAN");
     assert_eq_add!(ZERO, ZIP, ZERO, "ZERO + ZIP");
     assert_eq_add!(ZIP, ZERO, ZERO, "ZIP + ZERO");
     assert_eq_add!(ZIP, ZIP, ZERO, "ZIP + ZIP");
@@ -255,8 +255,8 @@ pub fn all_c_tests() {
         Dec64::from_parts(10000000000000000, 0),
         "9999999999999999 + 1"
     );
-    assert_eq_add!(NEG_ONE, EPSILON, ALMOST_NEG_ONE, "-1 + EPSILON");
-    assert_eq_add!(NEG_PI, PI, ZERO, "-pi + pi");
+    assert_eq_add!(NEGATIVE_ONE, EPSILON, ALMOST_NEGATIVE_ONE, "-1 + EPSILON");
+    assert_eq_add!(NEGATIVE_PI, PI, ZERO, "-pi + pi");
     assert_eq_add!(MAXINT, ONE, maxint_plus, "MAXINT + ONE");
     assert_eq_add!(MAXINT, HALF, maxint_plus, "MAXINT + half");
     assert_eq_add!(MAXINT, CENT, MAXINT, "MAXINT + cent");
@@ -332,12 +332,17 @@ pub fn all_c_tests() {
         ZERO,
         "extreme ZERO"
     );
-    assert_eq_add!(ALMOST_NEG_ONE, ONE, EPSILON, "ALMOST_NEG_ONE + ONE");
     assert_eq_add!(
-        ALMOST_NEG_ONE,
+        ALMOST_NEGATIVE_ONE,
+        ONE,
+        EPSILON,
+        "ALMOST_NEGATIVE_ONE + ONE"
+    );
+    assert_eq_add!(
+        ALMOST_NEGATIVE_ONE,
         ALMOST_ONE,
         ZERO,
-        "ALMOST_NEG_ONE + ALMOST_ONE"
+        "ALMOST_NEGATIVE_ONE + ALMOST_ONE"
     );
     assert_eq_add!(
         Dec64::from_parts(1, -1),

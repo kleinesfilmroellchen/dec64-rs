@@ -15,34 +15,34 @@ fn zip() {
 
 #[test]
 fn trivial() {
-    assert_eq!(-ONE, NEG_ONE);
-    assert_eq!(-TWO, NEG_TWO);
-    assert_eq!(-TEN, NEG_TEN);
-    assert_eq!(-PI, NEG_PI);
+    assert_eq!(-ONE, NEGATIVE_ONE);
+    assert_eq!(-TWO, NEGATIVE_TWO);
+    assert_eq!(-TEN, NEGATIVE_TEN);
+    assert_eq!(-PI, NEGATIVE_PI);
 }
 
 #[test]
 fn trivial_neg() {
-    assert_eq!(-NEG_ONE, ONE);
-    assert_eq!(-NEG_TWO, TWO);
-    assert_eq!(-NEG_TEN, TEN);
-    assert_eq!(-NEG_PI, PI);
+    assert_eq!(-NEGATIVE_ONE, ONE);
+    assert_eq!(-NEGATIVE_TWO, TWO);
+    assert_eq!(-NEGATIVE_TEN, TEN);
+    assert_eq!(-NEGATIVE_PI, PI);
 }
 
 #[test]
 fn nan() {
     assert_eq!(-NAN, NAN);
-    assert_eq!(-NAN_NAN, NAN);
+    assert_eq!(-NONNORMAL_NAN, NAN);
 }
 
 #[test]
 fn tenth() {
-    assert_eq!(-TENTH, NEG_TENTH);
+    assert_eq!(-TENTH, NEGATIVE_TENTH);
 }
 
 #[test]
 fn neg_tenth() {
-    assert_eq!(-NEG_TENTH, TENTH);
+    assert_eq!(-NEGATIVE_TENTH, TENTH);
 }
 
 #[test]

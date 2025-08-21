@@ -12,17 +12,17 @@ macro_rules! assert_eq_ceil {
 #[test]
 fn all_c() {
     assert_eq_ceil!(NAN, NAN, "NAN");
-    assert_eq_ceil!(NAN_NAN, NAN, "NAN_NAN");
+    assert_eq_ceil!(NONNORMAL_NAN, NAN, "NAN_NAN");
     assert_eq_ceil!(ZERO, ZERO, "ZERO");
     assert_eq_ceil!(ZIP, ZERO, "ZIP");
     // Discrepancy from C implementation: Minimum is already an integer
     assert_eq_ceil!(MIN, MIN, "MIN");
     assert_eq_ceil!(EPSILON, ONE, "EPSILON");
-    assert_eq_ceil!(NEG_EPSILON, ZERO, "NEG_EPSILON");
+    assert_eq_ceil!(NEGATIVE_EPSILON, ZERO, "NEGATIVE_EPSILON");
     assert_eq_ceil!(CENT, ONE, "CENT");
     assert_eq_ceil!(HALF, ONE, "HALF");
     assert_eq_ceil!(ONE, ONE, "ONE");
-    assert_eq_ceil!(NEG_ONE, NEG_ONE, "NEG_ONE");
+    assert_eq_ceil!(NEGATIVE_ONE, NEGATIVE_ONE, "NEGATIVE_ONE");
     assert_eq_ceil!(
         Dec64::new(10000000000000001, -16),
         TWO,
@@ -30,13 +30,13 @@ fn all_c() {
     );
     assert_eq_ceil!(
         Dec64::new(-10000000000000001, -16),
-        NEG_ONE,
+        NEGATIVE_ONE,
         "-1.0000000000000001"
     );
     assert_eq_ceil!(Dec64::new(20000000000000000, -16), TWO, "TWO");
     assert_eq_ceil!(E, THREE, "e");
     assert_eq_ceil!(PI, FOUR, "PI");
-    assert_eq_ceil!(NEG_PI, Dec64::new(-3, 0), "-PI");
+    assert_eq_ceil!(NEGATIVE_PI, Dec64::new(-3, 0), "-PI");
     assert_eq_ceil!(MAXINT, MAXINT, "MAXINT");
     assert_eq_ceil!(MAX, MAX, "MAX");
     assert_eq_ceil!(MININT, MININT, "MININT");
@@ -74,7 +74,7 @@ fn all_c() {
     assert_eq_ceil!(Dec64::new(-8888888888888889, -16), ZERO, "-0.8...");
     assert_eq_ceil!(
         Dec64::new(-10000000000000000, -16),
-        NEG_ONE,
+        NEGATIVE_ONE,
         "-10000000000000000e-16"
     );
     assert_eq_ceil!(Dec64::new(449, -2), FIVE, "4.49");
@@ -84,7 +84,7 @@ fn all_c() {
     assert_eq_ceil!(Dec64::new(9, -1), ONE, "0.9");
     assert_eq_ceil!(Dec64::new(-9, -1), ZERO, "-0.9");
     assert_eq_ceil!(ALMOST_ONE, ONE, "ALMOST_ONE");
-    assert_eq_ceil!(ALMOST_NEG_ONE, ZERO, "ALMOST_NEG_ONE");
+    assert_eq_ceil!(ALMOST_NEGATIVE_ONE, ZERO, "ALMOST_NEGATIVE_ONE");
     assert_eq_ceil!(Dec64::new(-999999999999999, -15), ZERO, "-0.9...");
     assert_eq_ceil!(Dec64::new(-9999999999999998, -16), ZERO, "-0.9...8");
 }

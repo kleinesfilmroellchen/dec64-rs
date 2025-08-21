@@ -2,9 +2,7 @@
 
 use core::ops::{Add, Div, Mul, Neg, Sub};
 
-use crate::{MAX_EXP, MIN_EXP};
-
-use super::{COEFFICIENT_MASK, Dec64, NAN, ZERO};
+use super::{COEFFICIENT_MASK, Dec64, MAX_EXP, MIN_EXP, NAN, ZERO};
 
 impl Add for Dec64 {
     type Output = Dec64;

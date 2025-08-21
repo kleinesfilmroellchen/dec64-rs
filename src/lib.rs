@@ -1,11 +1,11 @@
 use consts::*;
-use core::f32;
 
+mod cmp;
 pub mod consts;
-mod diyfp;
 #[cfg(feature = "std")]
 mod fmt;
-mod grisu2;
+mod from;
+mod math;
 mod ops;
 #[cfg(feature = "std")]
 mod write;
@@ -185,21 +185,6 @@ impl Dec64 {
         self.0 as i8
     }
 
-    /// Returns the sign of the DEC64 (-1, 0, 1).
-    #[inline]
-    pub fn sign(self) -> i8 {
-        if self.is_zero() {
-            0
-        } else {
-            let raw_sign = self.0 & SIGN_MASK;
-            match raw_sign {
-                SIGN_MASK => -1,
-                0 => 1,
-                _ => unsafe { core::hint::unreachable_unchecked() },
-            }
-        }
-    }
-
     /// Returns `true` if DEC64 is any Not a Number (NaN) and `false` otherwise.
     ///
     /// DEC64 NaN have exponent value of `-128`, and any coefficient.
@@ -220,34 +205,6 @@ impl Dec64 {
     #[inline]
     pub const fn is_zero(self) -> bool {
         self.coefficient() == 0 && !self.is_nan()
-    }
-
-    /// Returns `false` if the DEC64 contains a non-zero fractional part or if it is NaN,
-    /// and `true` otherwise.
-    #[inline]
-    pub const fn is_integer(self) -> bool {
-        let zero_coefficient = self.coefficient() == 0;
-        if self.is_nan() || (self.exponent() <= -17 && !zero_coefficient) {
-            // Extreme negative or positive exponents can never be integer. (This incules NaN).
-            false
-        } else if self.exponent() >= 0 || zero_coefficient {
-            true
-        } else if self.coefficient() % POWERS_OF_10[-self.exponent() as usize] as i64 == 0 {
-            // Divide coefficient by the power of ten. If the remainder is zero, then return true.
-            true
-        } else {
-            false
-        }
-    }
-
-    /// Calculates the absolute value of this DEC64. In rare cases, this will lead to precision loss if the positive coefficient becomes too large to fit.
-    #[inline]
-    pub fn abs(self) -> Self {
-        if self.is_nan() {
-            return NAN;
-        }
-        let new_coefficient = self.coefficient().abs();
-        Self::new(new_coefficient, self.exponent() as i32)
     }
 
     #[inline]
@@ -343,157 +300,3 @@ impl Dec64 {
         Self::new(new_coefficient * self.sign() as i64, new_exponent as i32)
     }
 }
-
-impl PartialEq<Dec64> for Dec64 {
-    /// Compare two DEC64 numbers.
-    /// Denormal zeroes are equal but denormal NaNs are not.
-    fn eq(&self, other: &Dec64) -> bool {
-        // If the numbers are trivally equal, then return true.
-        if self.0 == other.0 {
-            return true;
-        }
-
-        // Zeroes are equal.
-        if self.is_zero() && other.is_zero() {
-            return true;
-        }
-
-        // Do it the hard way by subtracting. Is the difference zero?
-        (*self - *other).is_zero()
-    }
-}
-
-impl PartialOrd<Dec64> for Dec64 {
-    fn partial_cmp(&self, other: &Dec64) -> Option<core::cmp::Ordering> {
-        // Trivial and NAN equality.
-        if self.0 == other.0 || (self.is_nan() && other.is_nan()) {
-            Some(core::cmp::Ordering::Equal)
-        } else {
-            let diff = *self - *other;
-            if diff.is_zero() {
-                Some(core::cmp::Ordering::Equal)
-            } else if diff.coefficient() > 0 {
-                Some(core::cmp::Ordering::Greater)
-            } else {
-                Some(core::cmp::Ordering::Less)
-            }
-        }
-    }
-}
-
-/// Converts an exponent to its corresponding power as a binary floating-point number.
-fn exponent_to_power_f64(e: i8) -> f64 {
-    const POSITIVE_POWERS: [f64; 23] = [
-        1.0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12, 1e13, 1e14, 1e15, 1e16,
-        1e17, 1e18, 1e19, 1e20, 1e21, 1e22,
-    ];
-
-    const NEGATIVE_POWERS: [f64; 23] = [
-        1.0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11, 1e-12, 1e-13,
-        1e-14, 1e-15, 1e-16, 1e-17, 1e-18, 1e-19, 1e-20, 1e-21, 1e-22,
-    ];
-
-    let index = e.unsigned_abs() as usize;
-
-    if index < 23 {
-        if e < 0 {
-            NEGATIVE_POWERS[index]
-        } else {
-            POSITIVE_POWERS[index]
-        }
-    } else {
-        // powf is more accurate
-        10f64.powf(e as f64)
-    }
-}
-
-fn exponent_to_power_f32(e: i8) -> f32 {
-    const POSITIVE_POWERS: [f32; 16] = [
-        1.0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12, 1e13, 1e14, 1e15,
-    ];
-
-    const NEGATIVE_POWERS: [f32; 16] = [
-        1.0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11, 1e-12, 1e-13,
-        1e-14, 1e-15,
-    ];
-
-    let index = e.unsigned_abs() as usize;
-
-    if index < 16 {
-        if e < 0 {
-            NEGATIVE_POWERS[index]
-        } else {
-            POSITIVE_POWERS[index]
-        }
-    } else {
-        // powf is more accurate
-        10f32.powf(e as f32)
-    }
-}
-
-impl From<Dec64> for f64 {
-    fn from(dec: Dec64) -> f64 {
-        (dec.coefficient() as f64) * exponent_to_power_f64(dec.exponent())
-    }
-}
-
-impl From<Dec64> for f32 {
-    fn from(dec: Dec64) -> f32 {
-        (dec.coefficient() as f32) * exponent_to_power_f32(dec.exponent())
-    }
-}
-
-impl From<f64> for Dec64 {
-    fn from(float: f64) -> Dec64 {
-        if float < 0.0 {
-            let (coefficient, exponent) = grisu2::convert(-float);
-
-            Dec64::from_parts(-(coefficient as i64), exponent as i8)
-        } else {
-            let (coefficient, exponent) = grisu2::convert(float);
-
-            Dec64::from_parts(coefficient as i64, exponent as i8)
-        }
-    }
-}
-
-impl From<f32> for Dec64 {
-    fn from(float: f32) -> Dec64 {
-        if float < 0.0 {
-            let (coefficient, exponent) = grisu2::convert(-float as f64);
-
-            Dec64::from_parts(-(coefficient as i64), exponent as i8)
-        } else {
-            let (coefficient, exponent) = grisu2::convert(float as f64);
-
-            Dec64::from_parts(coefficient as i64, exponent as i8)
-        }
-    }
-}
-
-macro_rules! impl_integer {
-    ($( $t:ty ),*) => ($(
-        impl From<$t> for Dec64 {
-            fn from(num: $t) -> Dec64 {
-                Dec64::from_raw((num as i64) << 8)
-            }
-        }
-
-        impl From<Dec64> for $t {
-            fn from(dec: Dec64) -> $t {
-                let exponent = dec.exponent();
-
-                if exponent <= 0 {
-                    dec.coefficient() as $t
-                } else {
-                    // This may overflow, which is fine
-                    (dec.coefficient() * 10i64.pow(exponent as u32)) as $t
-                }
-            }
-        }
-    )*)
-}
-
-impl_integer!(
-    usize, u8, u16, u32, u64, isize, i8, i16, i32, i64, i128, u128
-);

@@ -17,7 +17,7 @@ fn all_c() {
 
 pub fn all_c_tests() {
     assert_eq_div!(SIX, THREE, Dec64::new(20000000000000000, -16), "6 / 3");
-    assert_eq_div!(NAN_NAN, TWO, NAN, "NAN_NAN / 2");
+    assert_eq_div!(NONNORMAL_NAN, TWO, NAN, "NAN_NAN / 2");
     assert_eq_div!(NAN, TWO, NAN, "NAN / 2");
     assert_eq_div!(ZERO, TWO, ZERO, "0 / 2");
     assert_eq_div!(ZIP, TWO, ZERO, "ZIP / 2");
@@ -42,18 +42,18 @@ pub fn all_c_tests() {
         "4195835 / 3145727"
     );
     assert_eq_div!(NAN, THREE, NAN, "NAN / 3");
-    assert_eq_div!(NAN_NAN, NAN_NAN, NAN, "NAN_NAN / NAN_NAN");
-    assert_eq_div!(NAN_NAN, ONE, NAN, "NAN_NAN / 1");
+    assert_eq_div!(NONNORMAL_NAN, NONNORMAL_NAN, NAN, "NAN_NAN / NAN_NAN");
+    assert_eq_div!(NONNORMAL_NAN, ONE, NAN, "NAN_NAN / 1");
     // Discrepancy from C implementation: All operations with NAN result in NAN.
     assert_eq_div!(ZERO, NAN, NAN, "0 / NAN");
     // Discrepancy from C implementation: All operations with NAN result in NAN.
-    assert_eq_div!(ZERO, NAN_NAN, NAN, "0 / NAN_NAN");
+    assert_eq_div!(ZERO, NONNORMAL_NAN, NAN, "0 / NAN_NAN");
     // Discrepancy from C implementation: Divide by zero yields NAN.
     assert_eq_div!(ZERO, ZIP, NAN, "0 / ZIP");
     // Discrepancy from C implementation: All operations with NAN result in NAN.
     assert_eq_div!(ZIP, NAN, NAN, "ZIP / NAN");
     // Discrepancy from C implementation: All operations with NAN result in NAN.
-    assert_eq_div!(ZIP, NAN_NAN, NAN, "ZIP / NAN_NAN");
+    assert_eq_div!(ZIP, NONNORMAL_NAN, NAN, "ZIP / NAN_NAN");
     // Discrepancy from C implementation: Divide by zero yields NAN.
     assert_eq_div!(ZIP, ZERO, NAN, "ZIP / 0");
     // Discrepancy from C implementation: Divide by zero yields NAN.
@@ -62,8 +62,18 @@ pub fn all_c_tests() {
     // Discrepancy from C implementation: Divide by zero yields NAN.
     assert_eq_div!(ZERO, ZERO, NAN, "0 / 0");
     assert_eq_div!(ONE, ZERO, NAN, "1 / 0");
-    assert_eq_div!(ONE, NEG_ONE, Dec64::new(-10000000000000000, -16), "1 / -1");
-    assert_eq_div!(NEG_ONE, ONE, Dec64::new(-10000000000000000, -16), "-1 / 1");
+    assert_eq_div!(
+        ONE,
+        NEGATIVE_ONE,
+        Dec64::new(-10000000000000000, -16),
+        "1 / -1"
+    );
+    assert_eq_div!(
+        NEGATIVE_ONE,
+        ONE,
+        Dec64::new(-10000000000000000, -16),
+        "-1 / 1"
+    );
     assert_eq_div!(ONE, THREE, Dec64::new(33333333333333333, -17), "1 / 3");
     assert_eq_div!(TWO, THREE, Dec64::new(6666666666666667, -16), "2 / 3");
     assert_eq_div!(
@@ -114,36 +124,71 @@ pub fn all_c_tests() {
     assert_eq_div!(SEVEN, NINE, Dec64::new(7777777777777778, -16), "7 / 9");
     assert_eq_div!(EIGHT, NINE, Dec64::new(8888888888888889, -16), "8 / 9");
     assert_eq_div!(NINE, NINE, ONE, "9 / 9");
-    assert_eq_div!(ZERO, NEG_NINE, ZERO, "0 / -9");
-    assert_eq_div!(ONE, NEG_NINE, Dec64::new(-11111111111111111, -17), "1 / -9");
-    assert_eq_div!(TWO, NEG_NINE, Dec64::new(-22222222222222222, -17), "2 / -9");
+    assert_eq_div!(ZERO, NEGATIVE_NINE, ZERO, "0 / -9");
+    assert_eq_div!(
+        ONE,
+        NEGATIVE_NINE,
+        Dec64::new(-11111111111111111, -17),
+        "1 / -9"
+    );
+    assert_eq_div!(
+        TWO,
+        NEGATIVE_NINE,
+        Dec64::new(-22222222222222222, -17),
+        "2 / -9"
+    );
     assert_eq_div!(
         THREE,
-        NEG_NINE,
+        NEGATIVE_NINE,
         Dec64::new(-33333333333333333, -17),
         "3 / -9"
     );
-    assert_eq_div!(FOUR, NEG_NINE, Dec64::new(-4444444444444444, -16), "4 / -9");
-    assert_eq_div!(FIVE, NEG_NINE, Dec64::new(-5555555555555556, -16), "5 / -9");
-    assert_eq_div!(SIX, NEG_NINE, Dec64::new(-6666666666666667, -16), "6 / -9");
+    assert_eq_div!(
+        FOUR,
+        NEGATIVE_NINE,
+        Dec64::new(-4444444444444444, -16),
+        "4 / -9"
+    );
+    assert_eq_div!(
+        FIVE,
+        NEGATIVE_NINE,
+        Dec64::new(-5555555555555556, -16),
+        "5 / -9"
+    );
+    assert_eq_div!(
+        SIX,
+        NEGATIVE_NINE,
+        Dec64::new(-6666666666666667, -16),
+        "6 / -9"
+    );
     assert_eq_div!(
         SEVEN,
-        NEG_NINE,
+        NEGATIVE_NINE,
         Dec64::new(-7777777777777778, -16),
         "7 / -9"
     );
     assert_eq_div!(
         EIGHT,
-        NEG_NINE,
+        NEGATIVE_NINE,
         Dec64::new(-8888888888888889, -16),
         "8 / -9"
     );
-    assert_eq_div!(NINE, NEG_NINE, NEG_ONE, "9 / -9");
-    assert_eq_div!(PI, NEG_PI, Dec64::new(-10000000000000000, -16), "PI / -PI");
-    assert_eq_div!(NEG_PI, PI, Dec64::new(-10000000000000000, -16), "-PI / PI");
+    assert_eq_div!(NINE, NEGATIVE_NINE, NEGATIVE_ONE, "9 / -9");
     assert_eq_div!(
-        NEG_PI,
-        NEG_PI,
+        PI,
+        NEGATIVE_PI,
+        Dec64::new(-10000000000000000, -16),
+        "PI / -PI"
+    );
+    assert_eq_div!(
+        NEGATIVE_PI,
+        PI,
+        Dec64::new(-10000000000000000, -16),
+        "-PI / PI"
+    );
+    assert_eq_div!(
+        NEGATIVE_PI,
+        NEGATIVE_PI,
         Dec64::new(10000000000000000, -16),
         "-PI / -PI"
     );

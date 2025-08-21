@@ -1,8 +1,7 @@
+//! To-String ([`Display`]) implementation for DEC64.
+
 use crate::Dec64;
-use core::fmt;
-use std::fmt::Display;
-use std::fmt::Formatter;
-use std::fmt::Write;
+use std::fmt::{self, Display, Formatter, Write};
 use std::ops::Range;
 
 impl Dec64 {

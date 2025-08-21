@@ -1,5 +1,8 @@
-use crate::diyfp::DiyFp;
-use crate::diyfp::get_cached_power;
+//! Implementation of Florian Loitsch’s Grisu2 algorithm for binary to decimal floating point conversion.
+//! Normally used for printing decimal numbers from IEEE754 floats, but in this case we need it for converting to decimal floating-point.
+
+use super::diyfp::DiyFp;
+use super::diyfp::get_cached_power;
 
 #[inline]
 fn grisu_round(buffer: &mut u64, delta: u64, mut rest: u64, ten_kappa: u64, wp_w: u64) {
@@ -53,33 +56,15 @@ fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (u64, i16) {
 
     while kappa > 0 {
         match kappa {
-            9 => {
-                p1 %= 100000000;
-            }
-            8 => {
-                p1 %= 10000000;
-            }
-            7 => {
-                p1 %= 1000000;
-            }
-            6 => {
-                p1 %= 100000;
-            }
-            5 => {
-                p1 %= 10000;
-            }
-            4 => {
-                p1 %= 1000;
-            }
-            3 => {
-                p1 %= 100;
-            }
-            2 => {
-                p1 %= 10;
-            }
-            1 => {
-                p1 = 0;
-            }
+            9 => p1 %= 100000000,
+            8 => p1 %= 10000000,
+            7 => p1 %= 1000000,
+            6 => p1 %= 100000,
+            5 => p1 %= 10000,
+            4 => p1 %= 1000,
+            3 => p1 %= 100,
+            2 => p1 %= 10,
+            1 => p1 = 0,
             _ => {}
         }
         kappa = kappa.wrapping_sub(1);
@@ -119,7 +104,7 @@ fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (u64, i16) {
                         0
                     },
             );
-            return (buffer, k);
+            break (buffer, k);
         }
     }
 }

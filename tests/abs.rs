@@ -14,8 +14,8 @@ fn all_abs() {
     assert_eq!(ZIP.abs(), ZERO, "zip");
     assert_eq!(Dec64::from_raw(100).abs(), ZERO, "zero alias");
     assert_eq!(ONE.abs(), ONE, "one");
-    assert_eq!(NEG_ONE.abs(), ONE, "-1");
-    assert_eq!(ALMOST_NEG_ONE.abs(), ALMOST_ONE, "almost_negative_one");
+    assert_eq!(NEGATIVE_ONE.abs(), ONE, "-1");
+    assert_eq!(ALMOST_NEGATIVE_ONE.abs(), ALMOST_ONE, "almost_negative_one");
     assert_eq!(MININT.abs(), MAXINT + ONE, "-maxint");
     assert_eq!(MIN.abs(), NAN, "-maxnum");
     assert_eq!(MAX.abs(), MAX, "maxnum");
