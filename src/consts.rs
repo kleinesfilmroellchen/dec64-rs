@@ -72,7 +72,7 @@ pub const LN_10: Dec64 = Dec64::from_parts(23_025_850_929_940_457, -16_i8);
 /// A non-normal `NaN`.
 pub const NAN_NAN: Dec64 = Dec64::from_raw(0x8080);
 /// Difference between `1.0` and the previous largest representable number = `1.0_e-16`.
-pub const NEG_EPSILON: Dec64 = Dec64::from_parts(1, -16_i8);
+pub const NEG_EPSILON: Dec64 = Dec64::from_parts(-1, -16_i8);
 /// A non normal `0`.
 pub const ZIP: Dec64 = Dec64::from_raw(90);
 /// `0.01`
