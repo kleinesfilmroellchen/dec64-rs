@@ -48,7 +48,31 @@ const POWERS_OF_10: [u64; 20] = [
     100000_00000_00000_0000, // 19
 ];
 
-/// Struct holding DEC64 value.
+/// A [DEC64](https://dec64.com).
+///
+/// # Representation
+///
+/// Dec64 has a 56-bit “mantissa”, the signed two’s-complement integer coefficient,
+/// as well as an 8-bit exponent, which is also represented in two’s-complement.
+/// Access to these is provided separately via the [`Dec64::coefficient`] and [`Dec64::exponent`] functions.
+///
+/// Dec64 is guaranteed to have the same ABI as [`i64`].
+///
+/// # Creation
+///
+/// Dec64 implements [`From`] for all integer and floating-point types.
+/// A conversion from an integer type of 32 bits or less always preserves the exact integer value.
+/// Conversions from 64-bit integers or more may round to the nearest representable integer.
+/// Conversion from floating-point types rounds to the nearest representable Dec64 value,
+/// using the Grisu2 algorithm which is perfectly accurate in over 99.4% of cases.
+///
+/// Constructing a Dec64 directly can be done in three ways:
+/// - [`Dec64::new`] converts any exponent and coefficient combination into the closest representable Dec64.
+///   This is the recommended way of creating a new Dec64.
+/// - [`Dec64::from_parts`] implements the raw conversion from coefficient and exponent values.
+///   This function will trim off the upper 8 bits of the coefficient and should not be used unless the coefficient is known to be in range.
+/// - [`Dec64::from_raw`] constructs a Dec64 directly from any bitpattern (without conversions),
+///   which should only be used if a very specific value is needed.
 #[derive(Clone, Copy, Default, Eq)]
 #[repr(transparent)]
 pub struct Dec64(i64);

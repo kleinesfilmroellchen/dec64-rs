@@ -1,3 +1,5 @@
+use crate::consts::ZERO;
+
 /// Implementations of mathematical operations on DEC64.
 use super::{Dec64, POWERS_OF_10, SIGN_MASK, consts::NAN};
 
@@ -121,12 +123,64 @@ impl Dec64 {
             // (Importantly, this case will break in case of scaled 1 overflow)
             new_coefficient = self.coefficient().abs();
         }
-        println!(
-            "old coeff {} abs {} new coeff {new_coefficient} scaled one {scaled_one} => {}",
-            self.coefficient(),
-            self.coefficient().abs(),
-            new_coefficient * self.sign() as i64
-        );
+        // println!(
+        //     "old coeff {} abs {} new coeff {new_coefficient} scaled one {scaled_one} => {}",
+        //     self.coefficient(),
+        //     self.coefficient().abs(),
+        //     new_coefficient * self.sign() as i64
+        // );
+        Self::new(new_coefficient * self.sign() as i64, new_exponent as i32)
+    }
+
+    /// Return the closest DEC64 integer to this number.
+    /// Ties are rounded towards maximum magnitude.
+    #[inline]
+    pub fn round(self) -> Self {
+        self.round_to_places(0)
+    }
+
+    /// Round this DEC64 number to a certain number of decimal places.
+    /// Positive places indicate rounding before the decimal place, and negative places after the decimal place.
+    /// Rounding to place 0 is the same as [`Self::round`], i.e. round to nearest integer.
+    #[inline]
+    pub fn round_to_places(self, places: i8) -> Self {
+        if self.is_nan() {
+            return NAN;
+        }
+        let new_exponent = self.exponent();
+        let effective_one_exponent = (places - self.exponent()).max(0);
+        // Obtain the number 1 scaled to the same exponent as the coefficient.
+        let (scaled_one, did_overflow) = 10i64.overflowing_pow(effective_one_exponent as u32);
+
+        // println!("eff 1 {effective_one_exponent} scaled {scaled_one}");
+
+        if did_overflow {
+            // Calculating the scaled 1 overflowed.
+            // Since the coefficient is below 10^15, and the scaled 1 can go up to 10^19,
+            // we’re definitely small enough (below a thousandth) to round to 0.
+            return ZERO;
+        }
+
+        let remainder = self.coefficient().abs() % scaled_one;
+        if remainder == 0 {
+            // We’re already rounded, so the modulus method doesn’t work.
+            return self;
+        }
+
+        let scaled_half = scaled_one / 2;
+        let new_coefficient = if remainder < scaled_half {
+            // round down to next lower value
+            self.coefficient().abs() - remainder
+        } else {
+            // round up to next higher value
+            self.coefficient().abs() + (scaled_one - remainder)
+        };
+        // println!(
+        //     "old coeff {} abs {} new coeff {new_coefficient} scaled one {scaled_one} => {}",
+        //     self.coefficient(),
+        //     self.coefficient().abs(),
+        //     new_coefficient * self.sign() as i64
+        // );
         Self::new(new_coefficient * self.sign() as i64, new_exponent as i32)
     }
 }

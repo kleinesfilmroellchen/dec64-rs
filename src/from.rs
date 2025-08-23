@@ -95,7 +95,7 @@ impl From<f32> for Dec64 {
     }
 }
 
-macro_rules! impl_integer {
+macro_rules! impl_integer_small {
     ($( $t:ty ),*) => ($(
         impl From<$t> for Dec64 {
             fn from(num: $t) -> Dec64 {
@@ -118,6 +118,68 @@ macro_rules! impl_integer {
     )*)
 }
 
-impl_integer!(
-    usize, u8, u16, u32, u64, isize, i8, i16, i32, i64, i128, u128
-);
+macro_rules! impl_integer_large_signed {
+    ($( $t:ty ),*) => ($(
+        impl From<$t> for Dec64 {
+            fn from(num: $t) -> Dec64 {
+                let mut adjusted_num = num;
+                let mut last_digit = 0;
+                let mut exponent = 0;
+                while (adjusted_num > i64::MAX as $t) || (adjusted_num < i64::MIN as $t) {
+                    last_digit = (adjusted_num % 10).abs();
+                    adjusted_num /= 10;
+                    exponent += 1;
+                }
+                Dec64::new((adjusted_num + if last_digit >= 5 { adjusted_num.signum() } else { 0 }) as i64, exponent)
+            }
+        }
+
+        impl From<Dec64> for $t {
+            fn from(dec: Dec64) -> $t {
+                let exponent = dec.exponent();
+
+                if exponent <= 0 {
+                    dec.coefficient() as $t
+                } else {
+                    // This may overflow, which is fine
+                    (dec.coefficient() * 10i64.pow(exponent as u32)) as $t
+                }
+            }
+        }
+    )*)
+}
+
+macro_rules! impl_integer_large_unsigned {
+    ($( $t:ty ),*) => ($(
+        impl From<$t> for Dec64 {
+            fn from(num: $t) -> Dec64 {
+                let mut adjusted_num = num;
+                let mut last_digit = 0;
+                let mut exponent = 0;
+                while adjusted_num > i64::MAX as $t {
+                    last_digit = adjusted_num % 10;
+                    adjusted_num /= 10;
+                    exponent += 1;
+                }
+                Dec64::new((adjusted_num + if last_digit >= 5 { 1 } else { 0 }) as i64, exponent)
+            }
+        }
+
+        impl From<Dec64> for $t {
+            fn from(dec: Dec64) -> $t {
+                let exponent = dec.exponent();
+
+                if exponent <= 0 {
+                    dec.coefficient() as $t
+                } else {
+                    // This may overflow, which is fine
+                    (dec.coefficient() * 10i64.pow(exponent as u32)) as $t
+                }
+            }
+        }
+    )*)
+}
+
+impl_integer_small!(u8, u16, u32, i8, i16, i32);
+impl_integer_large_signed!(isize, i64, i128);
+impl_integer_large_unsigned!(usize, u64, u128);
