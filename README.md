@@ -25,7 +25,9 @@ A rough outline where this library is headed.
 - [ ] other operations
 	- [x] multiply
 	- [x] divide
-	- [ ] various math
+	- [x] all kinds of rounding
+	- [ ] sin/cos/tan
+	- [ ] sqrt/invsqrt/pow
 - [ ] port all C tests exactly
 	- [ ] use C tests to check exact correctness of implementation
 - [ ] port (and/or implement) assembly implementations and cross-check against Rust-only implementation:
